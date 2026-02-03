@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Formulários IAT</title>
+    <title>ERCBA - Licenciamento de Energia</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <style>
@@ -11,20 +11,12 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        :root {
-            --primary-color: #2c7a47;
-            --secondary-color: #38a169;
-            --accent-color: #3182ce;
-            --light-color: #f7fafc;
-            --dark-color: #2d3748;
+            font-family: 'Arial', sans-serif;
         }
         
         body {
             background: linear-gradient(135deg, #f5f9ff 0%, #e6f2ff 100%);
-            color: var(--dark-color);
+            color: #333;
             min-height: 100vh;
             padding: 20px;
         }
@@ -39,150 +31,159 @@
             margin-bottom: 40px;
             padding: 30px;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 0%, rgba(44,122,71,0.05) 100%);
-            z-index: 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 10px solid #2c7a47;
+            border-right: 10px solid #2c7a47;
         }
         
         .logo {
-            font-size: 4rem;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
+            font-size: 3rem;
+            color: #2c7a47;
+            margin-bottom: 15px;
         }
         
         h1 {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
+            font-size: 2rem;
+            color: #2c7a47;
+            margin-bottom: 5px;
+            text-transform: uppercase;
         }
         
         .subtitle {
-            font-size: 1.2rem;
-            color: #718096;
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .department {
+            font-size: 1.3rem;
+            color: #2c7a47;
+            font-weight: bold;
+            margin-top: 10px;
+            border-top: 2px solid #2c7a47;
+            padding-top: 10px;
+            display: inline-block;
         }
         
         .form-options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
             margin-bottom: 40px;
         }
         
         .form-option-card {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
+            border-radius: 12px;
+            padding: 25px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 3px solid transparent;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 3px solid #e0e0e0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 250px;
+            height: 200px;
             position: relative;
             overflow: hidden;
         }
         
         .form-option-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--primary-color);
-            box-shadow: 0 15px 30px rgba(44,122,71,0.15);
+            transform: translateY(-5px);
+            border-color: #2c7a47;
+            box-shadow: 0 8px 20px rgba(44,122,71,0.15);
         }
         
         .form-icon {
-            font-size: 3.5rem;
-            color: var(--primary-color);
-            margin-bottom: 20px;
+            font-size: 2.8rem;
+            color: #2c7a47;
+            margin-bottom: 15px;
         }
         
-        .form-letter {
+        .form-number {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--primary-color);
+            top: 10px;
+            right: 10px;
+            background: #2c7a47;
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
         
         .form-title {
-            font-size: 1.5rem;
-            color: var(--dark-color);
+            font-size: 1.3rem;
+            color: #333;
             margin-bottom: 10px;
             font-weight: 600;
         }
         
         .form-description {
-            color: #718096;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
         
         .instructions {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-top: 40px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-left: 5px solid #2c7a47;
         }
         
         .instructions h2 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
+            color: #2c7a47;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
-        .instructions ol {
+        .instructions ul {
             padding-left: 20px;
             line-height: 1.8;
         }
         
         .instructions li {
-            margin-bottom: 15px;
-            color: #4a5568;
-        }
-        
-        .instructions strong {
-            color: var(--primary-color);
+            margin-bottom: 10px;
+            color: #555;
         }
         
         footer {
             text-align: center;
-            margin-top: 50px;
+            margin-top: 40px;
             padding: 20px;
-            color: #718096;
+            color: #666;
             font-size: 0.9rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .status-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2c7a47;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 10px rgba(44,122,71,0.3);
+            z-index: 1000;
         }
         
         @media (max-width: 768px) {
@@ -190,30 +191,18 @@
                 grid-template-columns: 1fr;
             }
             
+            header {
+                padding: 20px;
+            }
+            
             h1 {
-                font-size: 2rem;
+                font-size: 1.6rem;
             }
             
             .form-option-card {
-                height: 200px;
+                height: 180px;
                 padding: 20px;
             }
-        }
-        
-        .status-badge {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--primary-color);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(44,122,71,0.3);
-            z-index: 1000;
         }
     </style>
 </head>
@@ -225,10 +214,14 @@
     <div class="container">
         <header>
             <div class="logo">
-                <i class="fas fa-file-alt"></i>
+                <i class="fas fa-file-contract"></i>
             </div>
-            <h1>Sistema de Formulários IAT</h1>
-            <p class="subtitle">Selecione o formulário que deseja preencher. Cada formulário contém 30 perguntas e 15 imagens.</p>
+            <h1>ESCRITÓRIO REGIONAL DE CURITIBA</h1>
+            <p class="subtitle">Instituto Água e Terra - Paraná</p>
+            <div class="department">SETOR DE LICENCIAMENTO DE ENERGIA</div>
+            <p style="margin-top: 15px; color: #555; font-size: 0.95rem;">
+                Sistema de Formulários Técnicos para Vistorias e Relatórios
+            </p>
         </header>
         
         <div class="form-options-grid" id="formOptions">
@@ -236,61 +229,52 @@
         </div>
         
         <div class="instructions">
-            <h2><i class="fas fa-info-circle"></i> Como usar:</h2>
-            <ol>
-                <li><strong>Selecione um formulário</strong> clicando em uma das opções acima</li>
-                <li><strong>Preencha todas as 30 perguntas</strong> do formulário selecionado</li>
-                <li><strong>Adicione até 15 imagens</strong> relacionadas ao formulário</li>
+            <h2><i class="fas fa-info-circle"></i> Instruções de Uso:</h2>
+            <ul>
+                <li><strong>Selecione o formulário</strong> correspondente à sua necessidade</li>
+                <li><strong>Preencha todos os campos obrigatórios</strong> (marcados com *)</li>
+                <li><strong>Adicione imagens/fotos</strong> quando necessário para documentação</li>
                 <li><strong>Revise os dados</strong> antes de gerar o relatório</li>
-                <li><strong>Gere o PDF ABNT</strong> com todos os dados coletados</li>
-                <li><strong>Os dados são salvos automaticamente</strong> e podem ser retomados a qualquer momento</li>
-            </ol>
+                <li><strong>Gere o PDF formatado</strong> com cabeçalho e rodapé oficiais</li>
+                <li><strong>Os dados são salvos automaticamente</strong> no seu dispositivo</li>
+            </ul>
         </div>
         
         <footer>
-            <p>© 2024 Instituto Água e Terra (IAT) - Sistema de Coleta de Dados</p>
-            <p>Versão 3.1 | Formatação ABNT | Funciona totalmente offline</p>
+            <p>© 2024 Instituto Água e Terra (IAT) - ERCBA - Licenciamento de Energia</p>
+            <p>Versão 1.0 | Documentos oficiais | Funciona offline</p>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #888;">
+                <i class="fas fa-shield-alt"></i> Dados armazenados localmente com segurança
+            </p>
         </footer>
     </div>
 
     <script>
-        // Dados dos formulários
+        // Dados dos 4 formulários específicos
         const formularios = {
-            A: {
-                titulo: "Formulário A - Qualidade da Água",
-                descricao: "Avaliação de parâmetros físicos, químicos e biológicos da água",
-                icon: "fas fa-tint",
+            1: {
+                titulo: "RELATÓRIO DE VISTORIA TÉCNICA",
+                descricao: "Atendimento às condicionantes e checklist de conformidade",
+                icon: "fas fa-clipboard-check",
                 cor: "#2c7a47"
             },
-            B: {
-                titulo: "Formulário B - Vegetação Ripária",
-                descricao: "Caracterização da vegetação às margens de corpos hídricos",
-                icon: "fas fa-tree",
-                cor: "#38a169"
-            },
-            C: {
-                titulo: "Formulário C - Geologia e Solos",
-                descricao: "Análise de características geológicas e tipos de solo",
-                icon: "fas fa-mountain",
-                cor: "#d69e2e"
-            },
-            D: {
-                titulo: "Formulário D - Fauna Aquática",
-                descricao: "Inventário e monitoramento de espécies aquáticas",
-                icon: "fas fa-fish",
+            2: {
+                titulo: "LISTA DE PRESENÇA",
+                descricao: "Registro de participantes em eventos/vistorias/reuniões",
+                icon: "fas fa-users",
                 cor: "#3182ce"
             },
-            E: {
-                titulo: "Formulário E - Impactos Antrópicos",
-                descricao: "Avaliação de impactos humanos no ambiente",
+            3: {
+                titulo: "RELATÓRIO DE VISTORIA AÉREA",
+                descricao: "Vistorias técnicas em processos de licenciamento de energia",
+                icon: "fas fa-plane",
+                cor: "#805ad5"
+            },
+            4: {
+                titulo: "RELATÓRIO DE VISTORIA TÉCNICA (Subestação)",
+                descricao: "Vistoria técnica em subestações - identificação e descrição",
                 icon: "fas fa-industry",
                 cor: "#e53e3e"
-            },
-            F: {
-                titulo: "Formulário F - Monitoramento Climático",
-                descricao: "Registro de dados climáticos e meteorológicos",
-                icon: "fas fa-cloud-sun",
-                cor: "#805ad5"
             }
         };
         
@@ -299,11 +283,11 @@
             const container = document.getElementById('formOptions');
             let html = '';
             
-            for (const [letra, dados] of Object.entries(formularios)) {
+            for (const [numero, dados] of Object.entries(formularios)) {
                 html += `
-                    <div class="form-option-card" onclick="abrirFormulario('${letra}')" 
-                         style="border-color: ${dados.cor}20;">
-                        <div class="form-letter" style="background: ${dados.cor}">${letra}</div>
+                    <div class="form-option-card" onclick="abrirFormulario(${numero})" 
+                         style="border-color: ${dados.cor}40;">
+                        <div class="form-number">${numero}</div>
                         <div class="form-icon">
                             <i class="${dados.icon}"></i>
                         </div>
@@ -317,9 +301,9 @@
         }
         
         // Abrir formulário selecionado
-        function abrirFormulario(letra) {
-            localStorage.setItem('formularioSelecionado', letra);
-            window.location.href = `formulario.html?form=${letra}`;
+        function abrirFormulario(numero) {
+            localStorage.setItem('formularioSelecionado', numero);
+            window.location.href = `formulario${numero}.html`;
         }
         
         // Verificar conexão
@@ -327,7 +311,7 @@
             const status = document.getElementById('status');
             if (navigator.onLine) {
                 status.innerHTML = '<i class="fas fa-wifi"></i> <span>Online</span>';
-                status.style.background = 'var(--primary-color)';
+                status.style.background = '#2c7a47';
             } else {
                 status.innerHTML = '<i class="fas fa-wifi-slash"></i> <span>Offline</span>';
                 status.style.background = '#e53e3e';
