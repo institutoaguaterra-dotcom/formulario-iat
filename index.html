@@ -826,4 +826,280 @@
         
         function getRequiredFields(formKey) {
             const fieldRequirements = {
-                F1: ['nome', 'matricula
+                F1: ['nome', 'matricula', 'data', 'cpf'],
+                F2: ['responsavel', 'matricula_resp', 'data_vistoria', 'municipio', 'latitude', 'longitude'],
+                F3: ['coletador', 'data_coleta', 'local_coleta', 'tipo_corpo'],
+                F4: ['tec_responsavel', 'matricula_tecnico', 'data_emissao', 'local_analise', 'conclusoes'],
+                F5: ['solicitante', 'data_solicitacao', 'municipio_obra']
+            };
+            return fieldRequirements[formKey] || [];
+        }
+        
+        // ================= BARRA DE PROGRESSO =================
+        function updateProgress() {
+            let totalFields = 0;
+            let completedFields = 0;
+            
+            for (let i = 1; i <= 5; i++) {
+                const formKey = `F${i}`;
+                const requiredFields = getRequiredFields(formKey);
+                totalFields += requiredFields.length;
+                
+                completedFields += requiredFields.filter(field => 
+                    formData[formKey][field] && formData[formKey][field].toString().trim() !== ''
+                ).length;
+            }
+            
+            const progress = totalFields > 0 ? (completedFields / totalFields) * 100 : 0;
+            document.getElementById('formProgress').style.width = `${progress}%`;
+        }
+        
+        // ================= ASSINATURA DIGITAL =================
+        function startDrawing(e) {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        }
+        
+        function stopDrawing() {
+            isDrawing = false;
+            signatureData = document.getElementById('signatureCanvas').toDataURL();
+            
+            // Adicionar assinatura a todos os formulários
+            for (let i = 1; i <= 5; i++) {
+                formData[`F${i}`].assinatura = signatureData;
+            }
+            
+            saveToLocalStorage();
+            showToast('Assinatura salva com sucesso!', 'success');
+        }
+        
+        function clearSignature() {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            signatureData = null;
+            
+            for (let i = 1; i <= 5; i++) {
+                delete formData[`F${i}`].assinatura;
+            }
+            
+            showToast('Assinatura removida!', 'info');
+        }
+        
+        function saveSignature() {
+            if (!signatureData) {
+                showToast('Desenhe uma assinatura primeiro!', 'error');
+                return;
+            }
+            showToast('Assinatura já está salva!', 'success');
+        }
+        
+        // ================= GERAR PDFs =================
+        function selectPDF(pdfNumber) {
+            selectedPDF = pdfNumber;
+            
+            // Atualizar cards
+            document.querySelectorAll('.pdf-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById(`pdfCard${pdfNumber}`).classList.add('active');
+            
+            showToast(`PDF F${pdfNumber} selecionado`, 'info');
+        }
+        
+        async function generateSelectedPDF() {
+            const formKey = `F${selectedPDF}`;
+            const requiredFields = getRequiredFields(formKey);
+            const missingFields = requiredFields.filter(field => 
+                !formData[formKey][field] || formData[formKey][field].toString().trim() === ''
+            );
+            
+            if (missingFields.length > 0) {
+                showToast(`Preencha os campos obrigatórios do F${selectedPDF} primeiro!`, 'error');
+                return;
+            }
+            
+            showToast(`Gerando PDF F${selectedPDF}...`, 'info');
+            
+            // Simular geração de PDF
+            setTimeout(() => {
+                const pdfName = `IAT_Formulario_F${selectedPDF}_${new Date().toISOString().slice(0,10)}.pdf`;
+                downloadSimulatedPDF(pdfName, formData[formKey]);
+                showToast(`PDF F${selectedPDF} gerado com sucesso!`, 'success');
+            }, 1500);
+        }
+        
+        async function generateAllPDFs() {
+            let hasIncomplete = false;
+            
+            for (let i = 1; i <= 5; i++) {
+                const formKey = `F${i}`;
+                const requiredFields = getRequiredFields(formKey);
+                const missingFields = requiredFields.filter(field => 
+                    !formData[formKey][field] || formData[formKey][field].toString().trim() === ''
+                );
+                
+                if (missingFields.length > 0) {
+                    hasIncomplete = true;
+                    break;
+                }
+            }
+            
+            if (hasIncomplete) {
+                showToast('Complete todos os formulários antes de gerar!', 'error');
+                return;
+            }
+            
+            showToast('Gerando todos os 5 PDFs...', 'info');
+            
+            // Simular geração de múltiplos PDFs
+            setTimeout(() => {
+                for (let i = 1; i <= 5; i++) {
+                    const formKey = `F${i}`;
+                    const pdfName = `IAT_Formulario_F${i}_${new Date().toISOString().slice(0,10)}.pdf`;
+                    
+                    // Em produção real, aqui você geraria o PDF com pdf-lib
+                    setTimeout(() => {
+                        downloadSimulatedPDF(pdfName, formData[formKey]);
+                    }, i * 300);
+                }
+                
+                showToast('Todos os 5 PDFs foram gerados!', 'success');
+            }, 2000);
+        }
+        
+        function downloadSimulatedPDF(filename, data) {
+            // Em produção real, substitua por geração real com pdf-lib
+            const content = `=== FORMULÁRIO IAT ===\n\n`;
+            let textContent = content + JSON.stringify(data, null, 2);
+            
+            const blob = new Blob([textContent], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // ================= ARMAZENAMENTO LOCAL =================
+        function saveToLocalStorage() {
+            localStorage.setItem('iatFormDataAll', JSON.stringify(formData));
+            localStorage.setItem('iatSignature', signatureData);
+        }
+        
+        function loadSavedData() {
+            const savedData = localStorage.getItem('iatFormDataAll');
+            const savedSignature = localStorage.getItem('iatSignature');
+            
+            if (savedData) {
+                formData = JSON.parse(savedData);
+                
+                // Preencher campos do formulário
+                document.getElementById('pesquisadorNome').value = formData.F1.nome || '';
+                document.getElementById('matriculaIAT').value = formData.F1.matricula || '';
+                document.getElementById('dataPesquisa').value = formData.F1.data || '';
+                document.getElementById('cpfPesquisador').value = formData.F1.cpf || '';
+                document.getElementById('municipio').value = formData.F2.municipio || '';
+                document.getElementById('baciaHidrografica').value = formData.F2.bacia || '';
+                document.getElementById('latitude').value = formData.F2.latitude || '';
+                document.getElementById('longitude').value = formData.F2.longitude || '';
+                document.getElementById('pontoReferencia').value = formData.F2.ponto_referencia || '';
+                document.getElementById('observacoesTecnicas').value = formData.F2.observacoes || '';
+                
+                // Preencher radios
+                if (formData.F2.tipo_corpo) {
+                    document.querySelector(`input[name="tipoCorpo"][value="${formData.F2.tipo_corpo}"]`).checked = true;
+                }
+                
+                // Preencher checkboxes
+                if (formData.F3.parametros) {
+                    const params = formData.F3.parametros.split(', ');
+                    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                        cb.checked = params.includes(cb.value);
+                    });
+                }
+                
+                // Carregar assinatura
+                if (savedSignature) {
+                    signatureData = savedSignature;
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = savedSignature;
+                }
+                
+                updateDataPreview();
+                updatePDFStatus();
+                updateProgress();
+                showToast('Dados anteriores carregados!', 'success');
+            }
+        }
+        
+        function saveAllData() {
+            saveToLocalStorage();
+            showToast('Todos os dados foram salvos localmente!', 'success');
+        }
+        
+        function clearAllData() {
+            if (confirm('Tem certeza que deseja limpar TODOS os dados? Isso não poderá ser desfeito.')) {
+                formData = { F1: {}, F2: {}, F3: {}, F4: {}, F5: {} };
+                localStorage.removeItem('iatFormDataAll');
+                localStorage.removeItem('iatSignature');
+                document.getElementById('iatForm').reset();
+                clearSignature();
+                updateDataPreview();
+                updatePDFStatus();
+                updateProgress();
+                showToast('Todos os dados foram removidos!', 'info');
+            }
+        }
+        
+        // ================= UTILITÁRIOS =================
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            if (navigator.onLine) {
+                statusText.textContent = 'Conectado';
+                statusElement.style.background = 'rgba(56, 161, 105, 0.3)';
+            } else {
+                statusText.textContent = 'Offline';
+                statusElement.style.background = 'rgba(229, 62, 62, 0.3)';
+            }
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toastMessage');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            
+            let icon = 'fas fa-info-circle';
+            if (type === 'success') icon = 'fas fa-check-circle';
+            if (type === 'error') icon = 'fas fa-exclamation-circle';
+            
+            toast.innerHTML = `<i class="${icon}"></i> ${message}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+        
+        // ================= SERVICE WORKER PARA OFFLINE =================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registrado:', reg))
+                .catch(err => console.log('Erro no Service Worker:', err));
+        }
+    </script>
+</body>
+</html>
