@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulário 4 - Vistoria Técnica (Subestação)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jsPDF para gerar PDFs reais -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
+        /* Mantenha todo o CSS anterior do formulario4.html */
         * {
             margin: 0;
             padding: 0;
@@ -358,686 +361,17 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Cabeçalho do Formulário -->
-        <div class="header-form">
-            <h1>ESCRITÓRIO REGIONAL DE CURITIBA (ERCBA)</h1>
-            <h2>SETOR DE LICENCIAMENTO DE ENERGIA</h2>
-            <h3>RELATÓRIO DE VISTORIA TÉCNICA</h3>
-        </div>
-        
-        <!-- Seção 1: Identificação do Empreendimento -->
-        <div class="section">
-            <div class="section-title">IDENTIFICAÇÃO DO EMPREENDIMENTO</div>
-            
-            <div class="grid-2">
-                <div class="info-group">
-                    <label for="interessado">INTERESSADO:</label>
-                    <input type="text" id="interessado" placeholder="Nome do interessado" required>
-                </div>
-                <div class="info-group">
-                    <label for="assunto">ASSUNTO:</label>
-                    <input type="text" id="assunto" placeholder="Assunto da vistoria" required>
-                </div>
-            </div>
-            
-            <div class="grid-3">
-                <div class="info-group">
-                    <label for="municipio">MUNICÍPIO:</label>
-                    <input type="text" id="municipio" placeholder="Nome do município" required>
-                </div>
-                <div class="info-group">
-                    <label for="coordenadas">COORDENADAS:</label>
-                    <input type="text" id="coordenadas" placeholder="Coordenadas geográficas">
-                </div>
-                <div class="info-group">
-                    <label for="protocolo">PROTOCOLO:</label>
-                    <input type="text" id="protocolo" placeholder="Número do protocolo" required>
-                </div>
-            </div>
-            
-            <div class="info-group">
-                <label for="atividade">ATIVIDADE:</label>
-                <input type="text" id="atividade" placeholder="Descrição da atividade" required>
-            </div>
-        </div>
-        
-        <!-- Seção 2: Descrição da Vistoria -->
-        <div class="section">
-            <div class="section-title">DESCRIÇÃO</div>
-            
-            <div class="info-group">
-                <label for="data_vistoria">Data da Vistoria:</label>
-                <input type="date" id="data_vistoria" required>
-            </div>
-            
-            <!-- Participantes da Vistoria -->
-            <div class="participantes-section">
-                <h4>Participantes da Vistoria:</h4>
-                <div id="participantesContainer">
-                    <!-- Participantes serão adicionados dinamicamente -->
-                </div>
-                <button type="button" onclick="adicionarParticipante()" style="margin-top: 10px; padding: 8px 15px; background: #3182ce; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                    <i class="fas fa-user-plus"></i> Adicionar Participante
-                </button>
-            </div>
-            
-            <div class="info-group">
-                <label for="descricao">Descrição da Vistoria:</label>
-                <textarea id="descricao" placeholder="Descreva detalhadamente a vistoria realizada...">Na subestação foram encontradas algumas inconformidades como avarias no sistema de drenagem e tubulações abertas e parcialmente obstruídas. Já no sistema de contenção de óleo e no sistema de separação de água e óleo não foram encontradas inconformidades. O efluente final da caixa SAO vai para galeria pluvial.</textarea>
-            </div>
-        </div>
-        
-        <!-- Seção 3: Checklist de Verificação -->
-        <div class="section">
-            <div class="section-title">VERIFICAÇÕES REALIZADAS</div>
-            
-            <div class="checklist">
-                <div class="checklist-item" id="check_transformadores">
-                    <input type="checkbox" id="check1" onchange="marcarChecklist(1, this.checked)">
-                    <label for="check1">Todos os transformadores possuíam bacia de contenção</label>
-                </div>
-                
-                <div class="checklist-item" id="check_drenagem">
-                    <input type="checkbox" id="check2" onchange="marcarChecklist(2, this.checked)">
-                    <label for="check2">Havia avarias em alguns sistemas de drenagem</label>
-                </div>
-                
-                <div class="checklist-item" id="check_caixa">
-                    <input type="checkbox" id="check3" onchange="marcarChecklist(3, this.checked)">
-                    <label for="check3">Uma das caixas de drenagem estava descoberta</label>
-                </div>
-                
-                <div class="checklist-item" id="check_encanamentos">
-                    <input type="checkbox" id="check4" onchange="marcarChecklist(4, this.checked)">
-                    <label for="check4">Havia encanamentos abertos e parcialmente obstruídos</label>
-                </div>
-                
-                <div class="checklist-item" id="check_vazamento">
-                    <input type="checkbox" id="check5" onchange="marcarChecklist(5, this.checked)">
-                    <label for="check5">Não foram encontrados indícios de vazamento de óleo na subestação</label>
-                </div>
-                
-                <div class="checklist-item" id="check_efluente">
-                    <input type="checkbox" id="check6" onchange="marcarChecklist(6, this.checked)">
-                    <label for="check6">O efluente final da caixa separadora de água e óleo coletado e observado não tinha contaminantes visíveis</label>
-                </div>
-                
-                <div class="checklist-item" id="check_irregularidades">
-                    <input type="checkbox" id="check7" onchange="marcarChecklist(7, this.checked)">
-                    <label for="check7">Não foram encontradas outras irregularidades no empreendimento</label>
-                </div>
-                
-                <button type="button" onclick="adicionarItemChecklist()" style="margin-top: 15px; padding: 8px 15px; background: #4a5568; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                    <i class="fas fa-plus"></i> Adicionar Item de Verificação
-                </button>
-                
-                <div class="observacoes-group">
-                    <label for="observacoes_checklist">Observações Adicionais:</label>
-                    <textarea id="observacoes_checklist" placeholder="Adicione observações sobre as verificações..."></textarea>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Seção 4: Registros Fotográficos -->
-        <div class="section image-section">
-            <div class="section-title">REGISTROS FOTOGRÁFICOS</div>
-            
-            <div class="image-upload" onclick="document.getElementById('fileInput').click()">
-                <i class="fas fa-camera fa-3x" style="color: #e53e3e; margin-bottom: 15px;"></i>
-                <h4>Clique para adicionar fotos da vistoria</h4>
-                <p>Segue abaixo registros fotográficos do empreendimento:</p>
-                <p style="font-size: 10pt; color: #888;">Adicione até 15 imagens (máx. 5MB cada)</p>
-            </div>
-            <input type="file" id="fileInput" accept="image/*" multiple style="display: none;" onchange="adicionarImagens(event)">
-            
-            <div class="image-grid" id="imageGrid">
-                <!-- Imagens serão adicionadas dinamicamente -->
-            </div>
-        </div>
-        
-        <!-- Seção 5: Conclusões -->
-        <div class="section">
-            <div class="section-title">CONCLUSÃO</div>
-            
-            <div class="conclusoes-list" id="conclusoesContainer">
-                <!-- Conclusões serão adicionadas dinamicamente -->
-            </div>
-            
-            <button type="button" onclick="adicionarConclusao()" style="margin-top: 10px; padding: 8px 15px; background: #2c7a47; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                <i class="fas fa-plus"></i> Adicionar Conclusão
-            </button>
-        </div>
-        
-        <!-- Data e Assinatura -->
-        <div class="section">
-            <div class="section-title">ASSINATURA</div>
-            
-            <div class="grid-2">
-                <div class="info-group">
-                    <label for="data_assinatura">Data:</label>
-                    <input type="date" id="data_assinatura" required>
-                </div>
-                <div class="info-group">
-                    <label for="local_assinatura">Local:</label>
-                    <input type="text" id="local_assinatura" value="Curitiba" required>
-                </div>
-            </div>
-            
-            <div style="text-align: center; padding: 30px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; margin-top: 20px;">
-                <div style="margin-bottom: 30px;">
-                    <canvas id="assinaturaCanvas" width="600" height="150" style="border: 1px dashed #ccc; background: white; cursor: crosshair;"></canvas>
-                    <div style="margin-top: 10px;">
-                        <button type="button" onclick="limparAssinatura()" style="padding: 8px 15px; background: #666; color: white; border: none; border-radius: 3px; cursor: pointer; margin-right: 10px;">
-                            <i class="fas fa-eraser"></i> Limpar
-                        </button>
-                        <button type="button" onclick="salvarAssinatura()" style="padding: 8px 15px; background: #e53e3e; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                            <i class="fas fa-save"></i> Salvar Assinatura
-                        </button>
-                    </div>
-                </div>
-                
-                <div style="text-align: center;">
-                    <div style="font-weight: bold; font-size: 14pt; margin-bottom: 10px;" id="nome_responsavel">
-                        Jéssica Anahí Rabery
-                    </div>
-                    <div style="color: #666; margin-bottom: 5px;" id="cargo_responsavel">
-                        Bolsista
-                    </div>
-                    <div style="color: #666;" id="setor_responsavel">
-                        IAT/ERCBA/LE
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Botões de Ação -->
-        <div class="buttons">
-            <button class="btn btn-secondary" onclick="window.location.href = 'index.html'">
-                <i class="fas fa-arrow-left"></i> Voltar
-            </button>
-            <button class="btn btn-primary" onclick="salvarFormulario()">
-                <i class="fas fa-save"></i> Salvar Rascunho
-            </button>
-            <button class="btn btn-success" onclick="gerarPDF()">
-                <i class="fas fa-file-pdf"></i> Gerar PDF
-            </button>
-        </div>
-    </div>
+    <!-- Mantenha todo o HTML do formulário 4 anterior -->
+    <!-- ... -->
     
-    <!-- Toast Notifications -->
-    <div class="toast" id="toast"></div>
-
     <script>
-        // Dados do formulário
-        let dadosFormulario = {
-            interessado: '',
-            assunto: '',
-            municipio: '',
-            coordenadas: '',
-            protocolo: '',
-            atividade: '',
-            data_vistoria: '',
-            participantes: [],
-            descricao: '',
-            checklist: [],
-            observacoes_checklist: '',
-            imagens: [],
-            conclusoes: [],
-            data_assinatura: '',
-            local_assinatura: 'Curitiba',
-            assinatura: null,
-            responsavel: {
-                nome: 'Jéssica Anahí Rabery',
-                cargo: 'Bolsista',
-                setor: 'IAT/ERCBA/LE'
-            }
-        };
+        // Mantenha todas as funções JavaScript anteriores
+        // ... 
         
-        // Configurar canvas de assinatura
-        const canvas = document.getElementById('assinaturaCanvas');
-        const ctx = canvas.getContext('2d');
-        let desenhando = false;
-        
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', function() {
-            // Data atual
-            const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('data_vistoria').value = hoje;
-            document.getElementById('data_assinatura').value = hoje;
-            
-            // Configurar canvas
-            ctx.strokeStyle = '#e53e3e';
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            
-            // Eventos do canvas
-            canvas.addEventListener('mousedown', iniciarDesenho);
-            canvas.addEventListener('mousemove', desenhar);
-            canvas.addEventListener('mouseup', pararDesenho);
-            
-            // Carregar dados salvos
-            carregarDados();
-            
-            // Adicionar participante inicial
-            adicionarParticipante();
-            
-            // Adicionar conclusões iniciais
-            adicionarConclusaoInicial();
-        });
-        
-        // Funções de assinatura
-        function iniciarDesenho(e) {
-            desenhando = true;
-            ctx.beginPath();
-            ctx.moveTo(e.offsetX, e.offsetY);
-        }
-        
-        function desenhar(e) {
-            if (!desenhando) return;
-            ctx.lineTo(e.offsetX, e.offsetY);
-            ctx.stroke();
-        }
-        
-        function pararDesenho() {
-            desenhando = false;
-        }
-        
-        function limparAssinatura() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            dadosFormulario.assinatura = null;
-        }
-        
-        function salvarAssinatura() {
-            dadosFormulario.assinatura = canvas.toDataURL();
-            mostrarToast('Assinatura salva com sucesso!', 'success');
-        }
-        
-        // Participantes
-        function adicionarParticipante() {
-            const container = document.getElementById('participantesContainer');
-            const index = container.children.length;
-            
-            const div = document.createElement('div');
-            div.className = 'participante-item';
-            div.innerHTML = `
-                <input type="text" 
-                       id="part_funcao_${index}" 
-                       placeholder="Função/Cargo"
-                       oninput="atualizarParticipante(${index}, 'funcao', this.value)">
-                <input type="text" 
-                       id="part_nome_${index}" 
-                       placeholder="Nome completo"
-                       oninput="atualizarParticipante(${index}, 'nome', this.value)">
-                <input type="text" 
-                       id="part_escritorio_${index}" 
-                       placeholder="Escritório Regional"
-                       oninput="atualizarParticipante(${index}, 'escritorio', this.value)">
-                <button type="button" onclick="removerParticipante(${index})" style="background: #e53e3e; color: white; border: none; border-radius: 3px; width: 30px; height: 30px; cursor: pointer;">
-                    ×
-                </button>
-            `;
-            
-            container.appendChild(div);
-        }
-        
-        function atualizarParticipante(index, campo, valor) {
-            if (!dadosFormulario.participantes[index]) {
-                dadosFormulario.participantes[index] = { funcao: '', nome: '', escritorio: '' };
-            }
-            dadosFormulario.participantes[index][campo] = valor;
-        }
-        
-        function removerParticipante(index) {
-            const container = document.getElementById('participantesContainer');
-            if (container.children[index]) {
-                container.children[index].remove();
-            }
-            dadosFormulario.participantes.splice(index, 1);
-            // Reindexar
-            const items = container.children;
-            for (let i = 0; i < items.length; i++) {
-                const inputs = items[i].querySelectorAll('input');
-                inputs[0].id = `part_funcao_${i}`;
-                inputs[1].id = `part_nome_${i}`;
-                inputs[2].id = `part_escritorio_${i}`;
-                
-                inputs[0].oninput = function() { atualizarParticipante(i, 'funcao', this.value); };
-                inputs[1].oninput = function() { atualizarParticipante(i, 'nome', this.value); };
-                inputs[2].oninput = function() { atualizarParticipante(i, 'escritorio', this.value); };
-                
-                items[i].querySelector('button').onclick = function() {
-                    removerParticipante(i);
-                };
-            }
-        }
-        
-        // Checklist
-        function marcarChecklist(numero, marcado) {
-            if (!dadosFormulario.checklist[numero]) {
-                dadosFormulario.checklist[numero] = { marcado: false, texto: '' };
-            }
-            dadosFormulario.checklist[numero].marcado = marcado;
-            
-            const item = document.getElementById(`check${numero}`).parentElement;
-            if (marcado) {
-                item.classList.add('checked');
-            } else {
-                item.classList.remove('checked');
-            }
-        }
-        
-        function adicionarItemChecklist() {
-            const container = document.querySelector('.checklist');
-            const checkCount = container.querySelectorAll('.checklist-item').length;
-            const novoId = checkCount + 1;
-            
-            const div = document.createElement('div');
-            div.className = 'checklist-item';
-            div.id = `check_custom_${novoId}`;
-            div.innerHTML = `
-                <input type="checkbox" id="check_custom_input_${novoId}" onchange="marcarChecklistCustom(${novoId}, this.checked)">
-                <input type="text" 
-                       id="check_text_${novoId}" 
-                       placeholder="Descreva o item de verificação..."
-                       oninput="atualizarChecklistCustom(${novoId}, this.value)"
-                       style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 3px; margin-right: 10px;">
-                <button type="button" onclick="removerItemChecklist(${novoId})" style="background: #e53e3e; color: white; border: none; border-radius: 3px; width: 30px; height: 30px; cursor: pointer;">
-                    ×
-                </button>
-            `;
-            
-            container.insertBefore(div, container.querySelector('button'));
-        }
-        
-        function marcarChecklistCustom(numero, marcado) {
-            if (!dadosFormulario.checklist[`custom_${numero}`]) {
-                dadosFormulario.checklist[`custom_${numero}`] = { marcado: false, texto: '' };
-            }
-            dadosFormulario.checklist[`custom_${numero}`].marcado = marcado;
-        }
-        
-        function atualizarChecklistCustom(numero, texto) {
-            if (!dadosFormulario.checklist[`custom_${numero}`]) {
-                dadosFormulario.checklist[`custom_${numero}`] = { marcado: false, texto: '' };
-            }
-            dadosFormulario.checklist[`custom_${numero}`].texto = texto;
-        }
-        
-        function removerItemChecklist(numero) {
-            const item = document.getElementById(`check_custom_${numero}`);
-            if (item) {
-                item.remove();
-                delete dadosFormulario.checklist[`custom_${numero}`];
-            }
-        }
-        
-        // Upload de imagens
-        function adicionarImagens(event) {
-            const files = event.target.files;
-            const container = document.getElementById('imageGrid');
-            
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                if (file.size > 5 * 1024 * 1024) {
-                    mostrarToast(`Imagem ${file.name} excede 5MB`, 'error');
-                    continue;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const index = dadosFormulario.imagens.length;
-                    dadosFormulario.imagens.push({
-                        data: e.target.result,
-                        nome: file.name,
-                        legenda: ''
-                    });
-                    
-                    const div = document.createElement('div');
-                    div.className = 'image-item';
-                    div.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview">
-                        <div class="remove-image" onclick="removerImagem(${index})">×</div>
-                        <div class="image-info">
-                            <input type="text" 
-                                   placeholder="Legenda da imagem"
-                                   oninput="atualizarImagem(${index}, 'legenda', this.value)">
-                        </div>
-                    `;
-                    
-                    container.appendChild(div);
-                };
-                
-                reader.readAsDataURL(file);
-            }
-        }
-        
-        function atualizarImagem(index, campo, valor) {
-            if (dadosFormulario.imagens[index]) {
-                dadosFormulario.imagens[index][campo] = valor;
-            }
-        }
-        
-        function removerImagem(index) {
-            dadosFormulario.imagens.splice(index, 1);
-            atualizarGridImagens();
-        }
-        
-        function atualizarGridImagens() {
-            const container = document.getElementById('imageGrid');
-            container.innerHTML = '';
-            
-            dadosFormulario.imagens.forEach((img, index) => {
-                const div = document.createElement('div');
-                div.className = 'image-item';
-                div.innerHTML = `
-                    <img src="${img.data}" alt="Preview">
-                    <div class="remove-image" onclick="removerImagem(${index})">×</div>
-                    <div class="image-info">
-                        <input type="text" 
-                               placeholder="Legenda da imagem"
-                               value="${img.legenda || ''}"
-                               oninput="atualizarImagem(${index}, 'legenda', this.value)">
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-        
-        // Conclusões
-        function adicionarConclusaoInicial() {
-            const conclusoesIniciais = [
-                "Todos os transformadores possuíam bacia de contenção;",
-                "Havia avarias em alguns sistemas de drenagem;",
-                "Uma das caixas de drenagem estava descoberta;",
-                "Havia encanamentos abertos e parcialmente obstruídos;",
-                "Não foram encontrados indícios de vazamento de óleo na subestação;",
-                "O efluente final da caixa separadora de água e óleo coletado e observado não tinha contaminantes visíveis;",
-                "Não foram encontradas outras irregularidades no empreendimento;"
-            ];
-            
-            const container = document.getElementById('conclusoesContainer');
-            conclusoesIniciais.forEach((texto, index) => {
-                const div = document.createElement('div');
-                div.className = 'conclusao-item';
-                div.innerHTML = `
-                    <input type="text" 
-                           id="conclusao_${index}" 
-                           value="${texto}"
-                           oninput="atualizarConclusao(${index}, this.value)">
-                    <button type="button" onclick="removerConclusao(${index})" style="background: #e53e3e; color: white; border: none; border-radius: 3px; width: 30px; height: 30px; cursor: pointer;">
-                        ×
-                    </button>
-                `;
-                container.appendChild(div);
-                dadosFormulario.conclusoes[index] = texto;
-            });
-        }
-        
-        function adicionarConclusao() {
-            const container = document.getElementById('conclusoesContainer');
-            const index = container.children.length;
-            
-            const div = document.createElement('div');
-            div.className = 'conclusao-item';
-            div.innerHTML = `
-                <input type="text" 
-                       id="conclusao_${index}" 
-                       placeholder="Adicione uma conclusão..."
-                       oninput="atualizarConclusao(${index}, this.value)">
-                <button type="button" onclick="removerConclusao(${index})" style="background: #e53e3e; color: white; border: none; border-radius: 3px; width: 30px; height: 30px; cursor: pointer;">
-                    ×
-                </button>
-            `;
-            container.appendChild(div);
-        }
-        
-        function atualizarConclusao(index, texto) {
-            dadosFormulario.conclusoes[index] = texto;
-        }
-        
-        function removerConclusao(index) {
-            const container = document.getElementById('conclusoesContainer');
-            if (container.children[index]) {
-                container.children[index].remove();
-            }
-            dadosFormulario.conclusoes.splice(index, 1);
-            // Reindexar
-            const items = container.children;
-            for (let i = 0; i < items.length; i++) {
-                const input = items[i].querySelector('input');
-                input.id = `conclusao_${i}`;
-                input.oninput = function() { atualizarConclusao(i, this.value); };
-                items[i].querySelector('button').onclick = function() {
-                    removerConclusao(i);
-                };
-            }
-        }
-        
-        // Salvar formulário
-        function salvarFormulario() {
-            // Coletar dados
-            dadosFormulario.interessado = document.getElementById('interessado').value;
-            dadosFormulario.assunto = document.getElementById('assunto').value;
-            dadosFormulario.municipio = document.getElementById('municipio').value;
-            dadosFormulario.coordenadas = document.getElementById('coordenadas').value;
-            dadosFormulario.protocolo = document.getElementById('protocolo').value;
-            dadosFormulario.atividade = document.getElementById('atividade').value;
-            dadosFormulario.data_vistoria = document.getElementById('data_vistoria').value;
-            dadosFormulario.descricao = document.getElementById('descricao').value;
-            dadosFormulario.observacoes_checklist = document.getElementById('observacoes_checklist').value;
-            dadosFormulario.data_assinatura = document.getElementById('data_assinatura').value;
-            dadosFormulario.local_assinatura = document.getElementById('local_assinatura').value;
-            
-            // Coletar checklist dos itens padrão
-            for (let i = 1; i <= 7; i++) {
-                const checkbox = document.getElementById(`check${i}`);
-                if (checkbox) {
-                    if (!dadosFormulario.checklist[i]) {
-                        dadosFormulario.checklist[i] = { marcado: false, texto: '' };
-                    }
-                    dadosFormulario.checklist[i].marcado = checkbox.checked;
-                    dadosFormulario.checklist[i].texto = checkbox.parentElement.querySelector('label').textContent;
-                }
-            }
-            
-            // Salvar no localStorage
-            localStorage.setItem('formulario4', JSON.stringify(dadosFormulario));
-            
-            mostrarToast('Relatório salvo com sucesso!', 'success');
-        }
-        
-        function carregarDados() {
-            const dadosSalvos = localStorage.getItem('formulario4');
-            if (dadosSalvos) {
-                dadosFormulario = JSON.parse(dadosSalvos);
-                
-                // Preencher campos
-                document.getElementById('interessado').value = dadosFormulario.interessado || '';
-                document.getElementById('assunto').value = dadosFormulario.assunto || '';
-                document.getElementById('municipio').value = dadosFormulario.municipio || '';
-                document.getElementById('coordenadas').value = dadosFormulario.coordenadas || '';
-                document.getElementById('protocolo').value = dadosFormulario.protocolo || '';
-                document.getElementById('atividade').value = dadosFormulario.atividade || '';
-                document.getElementById('data_vistoria').value = dadosFormulario.data_vistoria || '';
-                document.getElementById('descricao').value = dadosFormulario.descricao || '';
-                document.getElementById('observacoes_checklist').value = dadosFormulario.observacoes_checklist || '';
-                document.getElementById('data_assinatura').value = dadosFormulario.data_assinatura || '';
-                document.getElementById('local_assinatura').value = dadosFormulario.local_assinatura || '';
-                
-                // Carregar participantes
-                if (dadosFormulario.participantes && dadosFormulario.participantes.length > 0) {
-                    dadosFormulario.participantes.forEach((part, index) => {
-                        adicionarParticipante();
-                        document.getElementById(`part_funcao_${index}`).value = part.funcao || '';
-                        document.getElementById(`part_nome_${index}`).value = part.nome || '';
-                        document.getElementById(`part_escritorio_${index}`).value = part.escritorio || '';
-                    });
-                }
-                
-                // Carregar checklist
-                Object.keys(dadosFormulario.checklist).forEach(key => {
-                    if (key.startsWith('custom_')) {
-                        const numero = key.replace('custom_', '');
-                        adicionarItemChecklist();
-                        const checkbox = document.getElementById(`check_custom_input_${numero}`);
-                        const textInput = document.getElementById(`check_text_${numero}`);
-                        if (checkbox && textInput) {
-                            checkbox.checked = dadosFormulario.checklist[key].marcado;
-                            textInput.value = dadosFormulario.checklist[key].texto;
-                        }
-                    } else if (!isNaN(key)) {
-                        const checkbox = document.getElementById(`check${key}`);
-                        if (checkbox) {
-                            checkbox.checked = dadosFormulario.checklist[key].marcado;
-                            if (dadosFormulario.checklist[key].marcado) {
-                                checkbox.parentElement.classList.add('checked');
-                            }
-                        }
-                    }
-                });
-                
-                // Carregar imagens
-                if (dadosFormulario.imagens && dadosFormulario.imagens.length > 0) {
-                    atualizarGridImagens();
-                }
-                
-                // Carregar conclusões
-                if (dadosFormulario.conclusoes && dadosFormulario.conclusoes.length > 0) {
-                    const container = document.getElementById('conclusoesContainer');
-                    container.innerHTML = '';
-                    dadosFormulario.conclusoes.forEach((texto, index) => {
-                        const div = document.createElement('div');
-                        div.className = 'conclusao-item';
-                        div.innerHTML = `
-                            <input type="text" 
-                                   id="conclusao_${index}" 
-                                   value="${texto}"
-                                   oninput="atualizarConclusao(${index}, this.value)">
-                            <button type="button" onclick="removerConclusao(${index})" style="background: #e53e3e; color: white; border: none; border-radius: 3px; width: 30px; height: 30px; cursor: pointer;">
-                                ×
-                            </button>
-                        `;
-                        container.appendChild(div);
-                    });
-                }
-                
-                // Carregar assinatura
-                if (dadosFormulario.assinatura) {
-                    const img = new Image();
-                    img.onload = function() {
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(img, 0, 0);
-                    };
-                    img.src = dadosFormulario.assinatura;
-                }
-                
-                mostrarToast('Dados anteriores carregados', 'info');
-            }
-        }
-        
-        // Gerar PDF
-        function gerarPDF() {
+        // ============================================
+        // FUNÇÃO PARA GERAR PDF REAL
+        // ============================================
+        function gerarPDFReal() {
             salvarFormulario();
             
             if (!dadosFormulario.interessado || !dadosFormulario.protocolo || !dadosFormulario.data_vistoria) {
@@ -1045,109 +379,302 @@
                 return;
             }
             
-            mostrarToast('Gerando PDF...', 'info');
+            mostrarToast('Gerando PDF profissional...', 'info');
             
-            setTimeout(() => {
-                const dataFormatada = new Date(dadosFormulario.data_vistoria).toLocaleDateString('pt-BR');
-                const nomeArquivo = `Vistoria_Subestacao_${dadosFormulario.interessado.replace(/\s+/g, '_')}_${dataFormatada.replace(/\//g, '-')}.pdf`;
-                
-                // Criar conteúdo do PDF
-                let conteudo = `
-                    ESCRITÓRIO REGIONAL DE CURITIBA (ERCBA)
-                    SETOR DE LICENCIAMENTO DE ENERGIA
-                    RELATÓRIO DE VISTORIA TÉCNICA
-                    
-                    IDENTIFICAÇÃO DO EMPREENDIMENTO
-                    
-                    INTERESSADO: ${dadosFormulario.interessado}
-                    ASSUNTO: ${dadosFormulario.assunto}
-                    MUNICÍPIO: ${dadosFormulario.municipio}
-                    COORDENADAS: ${dadosFormulario.coordenadas}
-                    ATIVIDADE: ${dadosFormulario.atividade}
-                    PROTOCOLO: ${dadosFormulario.protocolo}
-                    
-                    DESCRIÇÃO:
-                    
-                    A vistoria foi realizada no dia ${dataFormatada}, pelos seguintes técnicos:
-                `;
-                
-                // Adicionar participantes
-                dadosFormulario.participantes.forEach(part => {
-                    if (part.nome || part.funcao) {
-                        conteudo += `
-                    • ${part.funcao || ''} ${part.nome || ''} (${part.escritorio || ''})`;
+            // Usar jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Configurações da página
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+            const marginLeft = 20;
+            const marginRight = 20;
+            const marginTop = 30;
+            let yPos = marginTop;
+            
+            // ============================================
+            // CABEÇALHO
+            // ============================================
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text("ESCRITÓRIO REGIONAL DE CURITIBA (ERCBA)", pageWidth / 2, yPos, { align: 'center' });
+            yPos += 8;
+            
+            doc.setFontSize(14);
+            doc.text("SETOR DE LICENCIAMENTO DE ENERGIA", pageWidth / 2, yPos, { align: 'center' });
+            yPos += 8;
+            
+            doc.setFontSize(12);
+            doc.text("RELATÓRIO DE VISTORIA TÉCNICA", pageWidth / 2, yPos, { align: 'center' });
+            yPos += 15;
+            
+            // Linha separadora
+            doc.setLineWidth(0.5);
+            doc.line(marginLeft, yPos, pageWidth - marginRight, yPos);
+            yPos += 10;
+            
+            // ============================================
+            // IDENTIFICAÇÃO DO EMPREENDIMENTO
+            // ============================================
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text("IDENTIFICAÇÃO DO EMPREENDIMENTO", marginLeft, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text("INTERESSADO:", marginLeft, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dadosFormulario.interessado, marginLeft + 35, yPos);
+            yPos += 6;
+            
+            doc.setFont('helvetica', 'bold');
+            doc.text("ASSUNTO:", marginLeft, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dadosFormulario.assunto, marginLeft + 30, yPos);
+            yPos += 6;
+            
+            doc.setFont('helvetica', 'bold');
+            doc.text("MUNICÍPIO:", marginLeft, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dadosFormulario.municipio, marginLeft + 35, yPos);
+            
+            doc.setFont('helvetica', 'bold');
+            doc.text("PROTOCOLO:", pageWidth - 80, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dadosFormulario.protocolo, pageWidth - 40, yPos, { align: 'right' });
+            yPos += 6;
+            
+            doc.setFont('helvetica', 'bold');
+            doc.text("COORDENADAS:", marginLeft, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dadosFormulario.coordenadas, marginLeft + 40, yPos);
+            yPos += 6;
+            
+            doc.setFont('helvetica', 'bold');
+            doc.text("ATIVIDADE:", marginLeft, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dadosFormulario.atividade, marginLeft + 35, yPos);
+            yPos += 10;
+            
+            // ============================================
+            // DESCRIÇÃO
+            // ============================================
+            if (yPos > pageHeight - 30) {
+                doc.addPage();
+                yPos = marginTop;
+            }
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text("DESCRIÇÃO", marginLeft, yPos);
+            yPos += 10;
+            
+            const dataVistoria = new Date(dadosFormulario.data_vistoria).toLocaleDateString('pt-BR');
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`A vistoria foi realizada no dia ${dataVistoria}, pelos seguintes técnicos:`, marginLeft, yPos);
+            yPos += 7;
+            
+            // Participantes
+            dadosFormulario.participantes.forEach(part => {
+                if (part.nome || part.funcao) {
+                    if (yPos > pageHeight - 20) {
+                        doc.addPage();
+                        yPos = marginTop;
                     }
-                });
-                
-                conteudo += `
-                    
-                    ${dadosFormulario.descricao}
-                    
-                    VERIFICAÇÕES REALIZADAS:
-                `;
-                
-                // Adicionar checklist
-                Object.values(dadosFormulario.checklist).forEach(item => {
-                    if (item.texto) {
-                        conteudo += `
-                    [${item.marcado ? '✓' : '✗'}] ${item.texto}`;
+                    doc.text(`• ${part.funcao || ''} ${part.nome || ''} (${part.escritorio || ''})`, marginLeft + 5, yPos);
+                    yPos += 5;
+                }
+            });
+            
+            yPos += 5;
+            
+            // Descrição da vistoria
+            const descLines = doc.splitTextToSize(dadosFormulario.descricao || '', pageWidth - marginLeft - marginRight);
+            descLines.forEach(line => {
+                if (yPos > pageHeight - 20) {
+                    doc.addPage();
+                    yPos = marginTop;
+                }
+                doc.text(line, marginLeft, yPos);
+                yPos += 5;
+            });
+            
+            yPos += 10;
+            
+            // ============================================
+            // VERIFICAÇÕES REALIZADAS
+            // ============================================
+            if (yPos > pageHeight - 30) {
+                doc.addPage();
+                yPos = marginTop;
+            }
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text("VERIFICAÇÕES REALIZADAS", marginLeft, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            
+            // Checklist
+            Object.values(dadosFormulario.checklist).forEach(item => {
+                if (item.texto) {
+                    if (yPos > pageHeight - 20) {
+                        doc.addPage();
+                        yPos = marginTop;
                     }
-                });
+                    const marcacao = item.marcado ? '[✓]' : '[✗]';
+                    doc.text(`${marcacao} ${item.texto}`, marginLeft, yPos);
+                    yPos += 5;
+                }
+            });
+            
+            yPos += 5;
+            
+            // Observações
+            if (dadosFormulario.observacoes_checklist && dadosFormulario.observacoes_checklist.trim()) {
+                doc.setFont('helvetica', 'bold');
+                doc.text("Observações:", marginLeft, yPos);
+                yPos += 7;
+                doc.setFont('helvetica', 'normal');
                 
-                if (dadosFormulario.observacoes_checklist) {
-                    conteudo += `
-                    
-                    Observações: ${dadosFormulario.observacoes_checklist}`;
+                const obsLines = doc.splitTextToSize(dadosFormulario.observacoes_checklist, pageWidth - marginLeft - marginRight);
+                obsLines.forEach(line => {
+                    if (yPos > pageHeight - 20) {
+                        doc.addPage();
+                        yPos = marginTop;
+                    }
+                    doc.text(line, marginLeft, yPos);
+                    yPos += 5;
+                });
+            }
+            
+            yPos += 10;
+            
+            // ============================================
+            // REGISTROS FOTOGRÁFICOS
+            // ============================================
+            if (dadosFormulario.imagens.length > 0) {
+                if (yPos > pageHeight - 30) {
+                    doc.addPage();
+                    yPos = marginTop;
                 }
                 
-                conteudo += `
-                    
-                    REGISTROS FOTOGRÁFICOS:
-                    Total de imagens: ${dadosFormulario.imagens.length}
-                `;
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text("REGISTROS FOTOGRÁFICOS", marginLeft, yPos);
+                yPos += 10;
                 
-                // Adicionar imagens
-                dadosFormulario.imagens.forEach(img => {
-                    conteudo += `
-                    • ${img.legenda || 'Sem legenda'}`;
-                });
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Total de imagens: ${dadosFormulario.imagens.length}`, marginLeft, yPos);
+                yPos += 7;
                 
-                conteudo += `
-                    
-                    CONCLUSÃO:
-                `;
+                doc.text("Segue abaixo registros fotográficos do empreendimento:", marginLeft, yPos);
+                yPos += 10;
                 
-                // Adicionar conclusões
-                dadosFormulario.conclusoes.forEach(conc => {
-                    if (conc) {
-                        conteudo += `
-                    • ${conc}`;
+                dadosFormulario.imagens.forEach((img, index) => {
+                    if (yPos > pageHeight - 20) {
+                        doc.addPage();
+                        yPos = marginTop;
                     }
+                    doc.text(`${index + 1}. ${img.legenda || 'Imagem sem legenda'}`, marginLeft, yPos);
+                    yPos += 5;
                 });
                 
-                const dataAssinatura = new Date(dadosFormulario.data_assinatura).toLocaleDateString('pt-BR');
-                conteudo += `
-                    
-                    
-                    ${dadosFormulario.local_assinatura}, ${dataAssinatura}.
-                    
-                    
-                    ${dadosFormulario.responsavel.nome}
-                    ${dadosFormulario.responsavel.cargo}
-                    ${dadosFormulario.responsavel.setor}
-                `;
+                yPos += 10;
+            }
+            
+            // ============================================
+            // CONCLUSÃO
+            // ============================================
+            if (yPos > pageHeight - 30) {
+                doc.addPage();
+                yPos = marginTop;
+            }
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text("CONCLUSÃO", marginLeft, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            
+            // Conclusões
+            dadosFormulario.conclusoes.forEach(conc => {
+                if (conc && conc.trim()) {
+                    if (yPos > pageHeight - 20) {
+                        doc.addPage();
+                        yPos = marginTop;
+                    }
+                    doc.text(`• ${conc}`, marginLeft, yPos);
+                    yPos += 5;
+                }
+            });
+            
+            yPos += 15;
+            
+            // ============================================
+            // ASSINATURA
+            // ============================================
+            if (yPos > pageHeight - 50) {
+                doc.addPage();
+                yPos = marginTop;
+            }
+            
+            const dataAssinatura = new Date(dadosFormulario.data_assinatura).toLocaleDateString('pt-BR');
+            doc.text(`${dadosFormulario.local_assinatura}, ${dataAssinatura}.`, pageWidth - marginRight, yPos, { align: 'right' });
+            yPos += 20;
+            
+            // Linha para assinatura
+            doc.setLineWidth(0.5);
+            doc.line(pageWidth - 150, yPos, pageWidth - marginRight, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text(dadosFormulario.responsavel.nome, pageWidth - 75, yPos, { align: 'center' });
+            yPos += 6;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dadosFormulario.responsavel.cargo, pageWidth - 75, yPos, { align: 'center' });
+            yPos += 5;
+            
+            doc.text(dadosFormulario.responsavel.setor, pageWidth - 75, yPos, { align: 'center' });
+            
+            // ============================================
+            // RODAPÉ
+            // ============================================
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
                 
-                // Criar e baixar arquivo
-                const blob = new Blob([conteudo], { type: 'application/pdf' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = nomeArquivo;
-                a.click();
-                URL.revokeObjectURL(url);
+                // Número da página
+                doc.setFontSize(8);
+                doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
                 
-                mostrarToast(`PDF "${nomeArquivo}" gerado com sucesso!`, 'success');
-            }, 1000);
+                // Data de geração
+                const dataGeracao = new Date().toLocaleDateString('pt-BR');
+                doc.text(`Gerado em: ${dataGeracao}`, pageWidth - marginRight, pageHeight - 10, { align: 'right' });
+                
+                // Logo IAT
+                doc.setFontSize(6);
+                doc.text("IAT - Instituto Água e Terra - Paraná", marginLeft, pageHeight - 10);
+            }
+            
+            // ============================================
+            // SALVAR PDF
+            // ============================================
+            const nomeArquivo = `Vistoria_Subestacao_${dadosFormulario.interessado.replace(/\s+/g, '_')}_${dataVistoria.replace(/\//g, '-')}.pdf`;
+            doc.save(nomeArquivo);
+            
+            mostrarToast(`PDF "${nomeArquivo}" gerado com sucesso!`, 'success');
         }
         
         // Toast messages
@@ -1171,6 +698,9 @@
                 toast.style.display = 'none';
             }, 3000);
         }
+        
+        // Mantenha todas as outras funções do formulário 4
+        // ...
     </script>
 </body>
 </html>
