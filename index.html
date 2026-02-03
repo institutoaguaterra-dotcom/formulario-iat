@@ -242,14 +242,14 @@
                 <li><strong>Preencha todas as 30 perguntas</strong> do formulário selecionado</li>
                 <li><strong>Adicione até 15 imagens</strong> relacionadas ao formulário</li>
                 <li><strong>Revise os dados</strong> antes de gerar o relatório</li>
-                <li><strong>Gere o PDF</strong> com todos os dados coletados</li>
+                <li><strong>Gere o PDF ABNT</strong> com todos os dados coletados</li>
                 <li><strong>Os dados são salvos automaticamente</strong> e podem ser retomados a qualquer momento</li>
             </ol>
         </div>
         
         <footer>
             <p>© 2024 Instituto Água e Terra (IAT) - Sistema de Coleta de Dados</p>
-            <p>Versão 3.0 | Funciona totalmente offline</p>
+            <p>Versão 3.1 | Formatação ABNT | Funciona totalmente offline</p>
         </footer>
     </div>
 
@@ -318,10 +318,7 @@
         
         // Abrir formulário selecionado
         function abrirFormulario(letra) {
-            // Salvar seleção
             localStorage.setItem('formularioSelecionado', letra);
-            
-            // Redirecionar para página do formulário
             window.location.href = `formulario.html?form=${letra}`;
         }
         
@@ -344,6 +341,13 @@
             
             window.addEventListener('online', atualizarConexao);
             window.addEventListener('offline', atualizarConexao);
+            
+            // Registrar Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                    .then(() => console.log('Service Worker registrado'))
+                    .catch(err => console.log('Erro SW:', err));
+            }
         });
     </script>
 </body>
