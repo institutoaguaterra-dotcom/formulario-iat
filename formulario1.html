@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulário 1 - Vistoria Técnica</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jsPDF para gerar PDFs reais -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -393,7 +395,7 @@
             <button class="btn btn-primary" onclick="salvarFormulario()">
                 <i class="fas fa-save"></i> Salvar Rascunho
             </button>
-            <button class="btn btn-success" onclick="gerarPDF()">
+            <button class="btn btn-success" onclick="gerarPDFReal()">
                 <i class="fas fa-file-pdf"></i> Gerar PDF
             </button>
         </div>
@@ -783,8 +785,10 @@
             }
         }
         
-        // Gerar PDF
-        function gerarPDF() {
+        // ============================================
+        // FUNÇÃO PRINCIPAL PARA GERAR PDF REAL
+        // ============================================
+        function gerarPDFReal() {
             salvarFormulario();
             
             if (!dadosFormulario.empreendimento || !dadosFormulario.protocolo || !dadosFormulario.data) {
@@ -792,83 +796,247 @@
                 return;
             }
             
-            mostrarToast('Gerando PDF...', 'info');
+            mostrarToast('Gerando PDF profissional...', 'info');
             
-            // Simular geração de PDF
-            setTimeout(() => {
-                const nomeArquivo = `Vistoria_Tecnica_${dadosFormulario.empreendimento.replace(/\s+/g, '_')}_${dadosFormulario.data.replace(/\//g, '-')}.pdf`;
-                
-                // Criar conteúdo do PDF
-                let conteudo = `
-                    ESCRITÓRIO REGIONAL DE CURITIBA
-                    SETOR DE LICENCIAMENTO DE ENERGIA
-                    RELATÓRIO DE VISTORIA TÉCNICA
-                    
-                    EMPREENDIMENTO: ${dadosFormulario.empreendimento}
-                    PROTOCOLO: ${dadosFormulario.protocolo}
-                    DATA: ${dadosFormulario.data}
-                    
-                    1. ATENDIMENTO ÀS CONDICIONANTES:
-                    
-                    CONDICIONANTES                 ATENDE
-                    -------------------------------------------------
-                `;
-                
-                // Adicionar condicionantes
-                dadosFormulario.condicionantes.forEach(cond => {
-                    if (cond.texto.trim()) {
-                        conteudo += `
-                    ${cond.texto}          ${cond.resposta || '-'}
-                        `;
+            // Usar jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Configurações da página
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+            const marginLeft = 20;
+            const marginRight = 20;
+            const marginTop = 30;
+            let yPos = marginTop;
+            
+            // ============================================
+            // CABEÇALHO
+            // ============================================
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text("ESCRITÓRIO REGIONAL DE CURITIBA", pageWidth / 2, yPos, { align: 'center' });
+            yPos += 8;
+            
+            doc.setFontSize(14);
+            doc.text("SETOR DE LICENCIAMENTO DE ENERGIA", pageWidth / 2, yPos, { align: 'center' });
+            yPos += 8;
+            
+            doc.setFontSize(12);
+            doc.text("RELATÓRIO DE VISTORIA TÉCNICA", pageWidth / 2, yPos, { align: 'center' });
+            yPos += 15;
+            
+            // Linha separadora
+            doc.setLineWidth(0.5);
+            doc.line(marginLeft, yPos, pageWidth - marginRight, yPos);
+            yPos += 10;
+            
+            // ============================================
+            // INFORMAÇÕES DO EMPREENDIMENTO
+            // ============================================
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text("EMPREENDIMENTO:", marginLeft, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dadosFormulario.empreendimento, marginLeft + 45, yPos);
+            yPos += 7;
+            
+            doc.setFont('helvetica', 'bold');
+            doc.text("PROTOCOLO:", marginLeft, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dadosFormulario.protocolo, marginLeft + 30, yPos);
+            
+            doc.setFont('helvetica', 'bold');
+            doc.text("DATA:", pageWidth - 60, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dadosFormulario.data, pageWidth - 40, yPos);
+            yPos += 10;
+            
+            // ============================================
+            // 1. ATENDIMENTO ÀS CONDICIONANTES
+            // ============================================
+            if (yPos > pageHeight - 50) {
+                doc.addPage();
+                yPos = marginTop;
+            }
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text("1. ATENDIMENTO ÀS CONDICIONANTES:", marginLeft, yPos);
+            yPos += 10;
+            
+            // Tabela de condicionantes
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text("CONDICIONANTES", marginLeft, yPos);
+            doc.text("ATENDE", pageWidth - 40, yPos, { align: 'right' });
+            yPos += 5;
+            
+            // Linha da tabela
+            doc.setLineWidth(0.2);
+            doc.line(marginLeft, yPos, pageWidth - marginRight, yPos);
+            yPos += 5;
+            
+            // Itens das condicionantes
+            doc.setFont('helvetica', 'normal');
+            dadosFormulario.condicionantes.forEach(cond => {
+                if (cond.texto && cond.texto.trim()) {
+                    // Verificar se precisa de nova página
+                    if (yPos > pageHeight - 20) {
+                        doc.addPage();
+                        yPos = marginTop;
                     }
-                });
-                
-                conteudo += `
                     
-                    2. RELATÓRIO DE CONFORMIDADE:
+                    // Texto da condicionante (com quebra de linha)
+                    const lines = doc.splitTextToSize(cond.texto, pageWidth - marginLeft - marginRight - 30);
+                    lines.forEach(line => {
+                        doc.text(line, marginLeft + 2, yPos);
+                        yPos += 5;
+                    });
                     
-                    CHECK-LIST IN-LOCO             ATENDE
-                    -------------------------------------------------
-                `;
-                
-                // Adicionar checklist
-                dadosFormulario.checklist.forEach(item => {
-                    if (item.texto) {
-                        conteudo += `
-                    ${item.texto}          ${item.resposta || '-'}
-                        `;
+                    // Resposta
+                    doc.text(cond.resposta || "-", pageWidth - 40, yPos - (lines.length * 5), { align: 'right' });
+                    
+                    // Espaço entre itens
+                    yPos += 3;
+                }
+            });
+            
+            yPos += 10;
+            
+            // ============================================
+            // 2. RELATÓRIO DE CONFORMIDADE
+            // ============================================
+            if (yPos > pageHeight - 50) {
+                doc.addPage();
+                yPos = marginTop;
+            }
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text("2. RELATÓRIO DE CONFORMIDADE:", marginLeft, yPos);
+            yPos += 10;
+            
+            // Tabela de checklist
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text("CHECK-LIST IN-LOCO", marginLeft, yPos);
+            doc.text("ATENDE", pageWidth - 40, yPos, { align: 'right' });
+            yPos += 5;
+            
+            // Linha da tabela
+            doc.line(marginLeft, yPos, pageWidth - marginRight, yPos);
+            yPos += 5;
+            
+            // Itens do checklist
+            doc.setFont('helvetica', 'normal');
+            dadosFormulario.checklist.forEach(item => {
+                if (item.texto) {
+                    // Verificar se precisa de nova página
+                    if (yPos > pageHeight - 20) {
+                        doc.addPage();
+                        yPos = marginTop;
                     }
-                });
-                
-                // Adicionar observações
-                if (dadosFormulario.observacoes) {
-                    conteudo += `
                     
-                    OBSERVAÇÕES:
-                    ${dadosFormulario.observacoes}
-                    `;
+                    const lines = doc.splitTextToSize(item.texto, pageWidth - marginLeft - marginRight - 30);
+                    lines.forEach(line => {
+                        doc.text(line, marginLeft + 2, yPos);
+                        yPos += 5;
+                    });
+                    
+                    doc.text(item.resposta || "-", pageWidth - 40, yPos - (lines.length * 5), { align: 'right' });
+                    yPos += 3;
+                }
+            });
+            
+            yPos += 10;
+            
+            // ============================================
+            // OBSERVAÇÕES
+            // ============================================
+            if (dadosFormulario.observacoes && dadosFormulario.observacoes.trim()) {
+                if (yPos > pageHeight - 50) {
+                    doc.addPage();
+                    yPos = marginTop;
                 }
                 
-                // Adicionar imagens
-                if (dadosFormulario.imagens.length > 0) {
-                    conteudo += `
-                    
-                    REGISTROS FOTOGRÁFICOS:
-                    Total: ${dadosFormulario.imagens.length} imagens
-                    `;
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text("OBSERVAÇÕES ADICIONAIS:", marginLeft, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                const obsLines = doc.splitTextToSize(dadosFormulario.observacoes, pageWidth - marginLeft - marginRight);
+                obsLines.forEach(line => {
+                    if (yPos > pageHeight - 20) {
+                        doc.addPage();
+                        yPos = marginTop;
+                    }
+                    doc.text(line, marginLeft, yPos);
+                    yPos += 5;
+                });
+                
+                yPos += 10;
+            }
+            
+            // ============================================
+            // REGISTROS FOTOGRÁFICOS
+            // ============================================
+            if (dadosFormulario.imagens.length > 0) {
+                if (yPos > pageHeight - 50) {
+                    doc.addPage();
+                    yPos = marginTop;
                 }
                 
-                // Criar e baixar arquivo
-                const blob = new Blob([conteudo], { type: 'application/pdf' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = nomeArquivo;
-                a.click();
-                URL.revokeObjectURL(url);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text("REGISTROS FOTOGRÁFICOS:", marginLeft, yPos);
+                yPos += 10;
                 
-                mostrarToast(`PDF "${nomeArquivo}" gerado com sucesso!`, 'success');
-            }, 1000);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Total de imagens: ${dadosFormulario.imagens.length}`, marginLeft, yPos);
+                yPos += 7;
+                
+                dadosFormulario.imagens.forEach((img, index) => {
+                    if (yPos > pageHeight - 20) {
+                        doc.addPage();
+                        yPos = marginTop;
+                    }
+                    
+                    doc.text(`${index + 1}. ${img.legenda || 'Imagem sem legenda'}`, marginLeft, yPos);
+                    yPos += 5;
+                });
+            }
+            
+            // ============================================
+            // RODAPÉ
+            // ============================================
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
+                
+                // Número da página
+                doc.setFontSize(8);
+                doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+                
+                // Data de geração
+                const dataGeracao = new Date().toLocaleDateString('pt-BR');
+                doc.text(`Gerado em: ${dataGeracao}`, pageWidth - marginRight, pageHeight - 10, { align: 'right' });
+                
+                // Logo IAT (se tiver)
+                doc.setFontSize(6);
+                doc.text("IAT - Instituto Água e Terra - Paraná", marginLeft, pageHeight - 10);
+            }
+            
+            // ============================================
+            // SALVAR PDF
+            // ============================================
+            const nomeArquivo = `Vistoria_Tecnica_${dadosFormulario.empreendimento.replace(/\s+/g, '_')}_${dadosFormulario.data.replace(/\//g, '-')}.pdf`;
+            doc.save(nomeArquivo);
+            
+            mostrarToast(`PDF "${nomeArquivo}" gerado com sucesso!`, 'success');
         }
         
         // Toast messages
