@@ -1,12 +1,14 @@
-const CACHE_NAME = 'iat-forms-v3.1';
+const CACHE_NAME = 'ercba-forms-v2.0';
 const urlsToCache = [
   './',
   './index.html',
-  './formulario.html',
+  './formulario1.html',
+  './formulario2.html',
+  './formulario3.html',
+  './formulario4.html',
   './manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
 ];
 
 self.addEventListener('install', event => {
