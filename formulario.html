@@ -159,35 +159,24 @@
             gap: 10px;
         }
         
-        /* Fixed Text Areas */
+        /* Fixed Text Areas - SOMENTE LEITURA */
         .fixed-text {
             background: #f7fafc;
             border: 2px solid #e2e8f0;
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 25px;
-            font-style: italic;
-            color: #4a5568;
             line-height: 1.6;
+            font-size: 0.95rem;
+            color: #4a5568;
         }
         
-        .fixed-text label {
-            display: block;
-            margin-bottom: 10px;
+        .fixed-text-title {
             font-weight: 600;
             color: var(--primary-color);
-            font-style: normal;
-        }
-        
-        .fixed-text textarea {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
+            margin-bottom: 10px;
+            display: block;
             font-size: 1rem;
-            resize: vertical;
-            min-height: 120px;
-            font-family: inherit;
         }
         
         /* Questions */
@@ -505,19 +494,19 @@
         <div class="form-section active" id="secaoPerguntas">
             <h2 class="section-title"><i class="fas fa-question-circle"></i> Perguntas do Formulário</h2>
             
-            <!-- Texto fixo antes das perguntas -->
+            <!-- Texto fixo ANTES das perguntas (EDITÁVEL NO CÓDIGO) -->
             <div class="fixed-text">
-                <label for="textoAntesPerguntas">Texto fixo antes das perguntas:</label>
-                <textarea id="textoAntesPerguntas" placeholder="Digite o texto que aparecerá antes de todas as perguntas...">Este formulário tem como objetivo coletar dados ambientais para análise técnica. Responda todas as questões com atenção aos detalhes. As informações coletadas serão utilizadas para elaboração de relatórios técnicos e tomada de decisões.</textarea>
+                <span class="fixed-text-title">TEXTO INTRODUTÓRIO:</span>
+                <div id="textoAntesPerguntas"></div>
             </div>
             
             <!-- Container das perguntas -->
             <div id="perguntasContainer"></div>
             
-            <!-- Texto fixo depois das perguntas -->
+            <!-- Texto fixo DEPOIS das perguntas (EDITÁVEL NO CÓDIGO) -->
             <div class="fixed-text">
-                <label for="textoDepoisPerguntas">Texto fixo depois das perguntas:</label>
-                <textarea id="textoDepoisPerguntas" placeholder="Digite o texto que aparecerá depois de todas as perguntas...">Agradecemos pelo preenchimento cuidadoso deste formulário. As informações fornecidas são essenciais para nossa análise ambiental. Em caso de dúvidas, entre em contato com a equipe técnica.</textarea>
+                <span class="fixed-text-title">TEXTO DE ENCERRAMENTO:</span>
+                <div id="textoDepoisPerguntas"></div>
             </div>
             
             <div class="control-buttons">
@@ -537,19 +526,19 @@
         <div class="form-section" id="secaoImagens">
             <h2 class="section-title"><i class="fas fa-images"></i> Upload de Imagens</h2>
             
-            <!-- Texto fixo antes das imagens -->
+            <!-- Texto fixo ANTES das imagens (EDITÁVEL NO CÓDIGO) -->
             <div class="fixed-text">
-                <label for="textoAntesImagens">Texto fixo antes das imagens:</label>
-                <textarea id="textoAntesImagens" placeholder="Digite o texto que aparecerá antes das imagens...">Adicione até 15 imagens relacionadas à pesquisa. Certifique-se de que as imagens sejam nítidas e representativas das condições observadas. Cada imagem deve ter uma legenda descritiva.</textarea>
+                <span class="fixed-text-title">INSTRUÇÕES PARA FOTOS:</span>
+                <div id="textoAntesImagens"></div>
             </div>
             
             <!-- Container de upload de imagens -->
             <div class="image-upload-area" id="imageUploadContainer"></div>
             
-            <!-- Texto fixo depois das imagens -->
+            <!-- Texto fixo DEPOIS das imagens (EDITÁVEL NO CÓDIGO) -->
             <div class="fixed-text">
-                <label for="textoDepoisImagens">Texto fixo depois das imagens:</label>
-                <textarea id="textoDepoisImagens" placeholder="Digite o texto que aparecerá depois das imagens...">As imagens foram documentadas e associadas aos dados coletados. Elas servirão como evidência visual para complementar a análise técnica.</textarea>
+                <span class="fixed-text-title">OBSERVAÇÕES FINAIS:</span>
+                <div id="textoDepoisImagens"></div>
             </div>
             
             <div class="control-buttons">
@@ -569,9 +558,10 @@
         <div class="form-section" id="secaoRevisao">
             <h2 class="section-title"><i class="fas fa-eye"></i> Revisão Final</h2>
             
+            <!-- Texto final (EDITÁVEL NO CÓDIGO) -->
             <div class="fixed-text">
-                <label for="textoFinal">Texto final antes de gerar PDF:</label>
-                <textarea id="textoFinal" placeholder="Digite o texto final que aparecerá antes de gerar o PDF...">Todos os dados foram revisados e estão prontos para geração do relatório. Certifique-se de que todas as informações estão corretas antes de prosseguir.</textarea>
+                <span class="fixed-text-title">CONSIDERAÇÕES FINAIS:</span>
+                <div id="textoFinal"></div>
             </div>
             
             <!-- Resumo das respostas -->
@@ -590,8 +580,8 @@
                 <button class="btn btn-secondary" onclick="mostrarSecao('imagens')">
                     <i class="fas fa-arrow-left"></i> Anterior
                 </button>
-                <button class="btn btn-success" onclick="gerarPDF()">
-                    <i class="fas fa-file-pdf"></i> Gerar PDF
+                <button class="btn btn-success" onclick="gerarPDFABNT()">
+                    <i class="fas fa-file-pdf"></i> Gerar PDF ABNT
                 </button>
             </div>
         </div>
@@ -601,17 +591,79 @@
     <div class="toast" id="toast"></div>
 
     <script>
+        // ============================================
+        // TEXTO FIXO PRÉ-DEFINIDO - EDITAR AQUI
+        // ============================================
+        const TEXTOS_FIXOS = {
+            antesPerguntas: `
+                <p>Este formulário foi elaborado pelo Instituto Água e Terra (IAT) com o objetivo de padronizar a coleta de dados ambientais em campo. As informações coletadas serão utilizadas para:</p>
+                <ul>
+                    <li>Monitoramento da qualidade ambiental</li>
+                    <li>Elaboração de relatórios técnicos</li>
+                    <li>Suporte à tomada de decisões</li>
+                    <li>Atendimento à legislação ambiental</li>
+                </ul>
+                <p><strong>Instruções:</strong> Responda todas as questões com atenção, baseando-se nas observações de campo. Utilize a escala de 1 a 5 para avaliar cada aspecto, onde 1 representa condição inadequada e 5 condição ideal.</p>
+            `,
+            
+            depoisPerguntas: `
+                <p>O preenchimento deste formulário deve ser realizado por profissional habilitado, preferencialmente com formação na área ambiental. Todas as respostas devem refletir a realidade observada em campo, sem inferências ou suposições.</p>
+                <p><strong>Importante:</strong> As informações aqui registradas possuem valor legal e podem ser utilizadas em processos administrativos e judiciais. Certifique-se da veracidade dos dados informados.</p>
+                <p>A próxima etapa consiste no registro fotográfico das condições observadas.</p>
+            `,
+            
+            antesImagens: `
+                <p>Esta seção destina-se ao registro fotográfico das condições observadas em campo. São permitidas até 15 imagens, que devem:</p>
+                <ul>
+                    <li>Ser nítidas e bem iluminadas</li>
+                    <li>Representar fielmente as condições observadas</li>
+                    <li>Incluir legenda descritiva</li>
+                    <li>Ter data e hora do registro (automática)</li>
+                </ul>
+                <p><strong>Orientações técnicas:</strong></p>
+                <ol>
+                    <li>Incluir sempre uma foto do panorama geral do local</li>
+                    <li>Registrar detalhes específicos mencionados nas respostas</li>
+                    <li>Incluir fotos com escala (pessoa, objeto de referência)</li>
+                    <li>Evitar fotos com pessoas identificáveis</li>
+                </ol>
+            `,
+            
+            depoisImagens: `
+                <p>O registro fotográfico complementa e valida as informações textuais coletadas. As imagens servem como:</p>
+                <ul>
+                    <li>Evidência documental das condições observadas</li>
+                    <li>Material de apoio para análises técnicas</li>
+                    <li>Base para comparações temporais</li>
+                    <li>Elemento ilustrativo em relatórios</li>
+                </ul>
+                <p><strong>Atenção:</strong> As imagens serão armazenadas junto com os demais dados e poderão ser recuperadas para consulta ou produção de relatórios. Certifique-se de que todas as fotos estão adequadamente legendadas.</p>
+            `,
+            
+            textoFinal: `
+                <p>Este relatório foi gerado automaticamente pelo Sistema de Coleta de Dados do Instituto Água e Terra. Todos os dados foram coletados seguindo protocolos técnicos estabelecidos pela instituição.</p>
+                <p><strong>Validade:</strong> Os dados apresentados refletem as condições observadas na data da coleta. Recomenda-se a realização de monitoramentos periódicos para acompanhamento das variações temporais.</p>
+                <p><strong>Responsabilidade técnica:</strong> O profissional que coletou os dados é responsável pela veracidade das informações registradas.</p>
+                <p>Ao gerar o relatório em formato PDF, você estará criando um documento oficial com formatação ABNT, incluindo cabeçalho e rodapé padronizados.</p>
+            `
+        };
+        
+        // URLs das imagens do cabeçalho e rodapé (substitua pelos seus URLs)
+        const IMAGENS_PDF = {
+            cabecalho: 'https://via.placeholder.com/800x150/2c7a47/ffffff?text=INSTITUTO+AGUA+E+TERRA+-+CABECALHO',
+            rodape: 'https://via.placeholder.com/800x80/2c7a47/ffffff?text=Instituto+%C3%81gua+e+Terra+-+Rodap%C3%A9'
+        };
+        
         // Dados do formulário atual
         let formularioAtual = 'A';
         let dadosFormulario = {
             respostas: {},
             imagens: [],
-            textosFixos: {
-                antesPerguntas: '',
-                depoisPerguntas: '',
-                antesImagens: '',
-                depoisImagens: '',
-                textoFinal: ''
+            informacoesColeta: {
+                data: new Date().toLocaleDateString('pt-BR'),
+                hora: new Date().toLocaleTimeString('pt-BR'),
+                pesquisador: '',
+                matricula: ''
             }
         };
         
@@ -681,7 +733,7 @@
                 "Qual a necessidade de intervenção?",
                 "Qual o potencial de regeneração natural?"
             ]
-            // Adicionar mais formulários C, D, E, F...
+            // Adicionar C, D, E, F conforme necessário
         };
         
         // Inicialização
@@ -692,6 +744,9 @@
             
             // Configurar informações do formulário
             configurarFormulario();
+            
+            // Inserir textos fixos (pré-definidos no código)
+            inserirTextosFixos();
             
             // Carregar dados salvos
             carregarDados();
@@ -730,6 +785,15 @@
             document.documentElement.style.setProperty('--primary-color', form.cor);
         }
         
+        function inserirTextosFixos() {
+            // Inserir textos pré-definidos (NÃO editáveis pelo usuário)
+            document.getElementById('textoAntesPerguntas').innerHTML = TEXTOS_FIXOS.antesPerguntas;
+            document.getElementById('textoDepoisPerguntas').innerHTML = TEXTOS_FIXOS.depoisPerguntas;
+            document.getElementById('textoAntesImagens').innerHTML = TEXTOS_FIXOS.antesImagens;
+            document.getElementById('textoDepoisImagens').innerHTML = TEXTOS_FIXOS.depoisImagens;
+            document.getElementById('textoFinal').innerHTML = TEXTOS_FIXOS.textoFinal;
+        }
+        
         function gerarPerguntas() {
             const container = document.getElementById('perguntasContainer');
             const perguntas = perguntasPorFormulario[formularioAtual] || perguntasPorFormulario.A;
@@ -749,24 +813,24 @@
                         
                         <div class="answer-options">
                             <label class="option-label">
-                                <input type="radio" name="${perguntaId}" value="Excelente" required>
-                                <span>Excelente</span>
+                                <input type="radio" name="${perguntaId}" value="1 - Insatisfatório" required>
+                                <span>1 - Insatisfatório</span>
                             </label>
                             <label class="option-label">
-                                <input type="radio" name="${perguntaId}" value="Bom" required>
-                                <span>Bom</span>
+                                <input type="radio" name="${perguntaId}" value="2 - Regular" required>
+                                <span>2 - Regular</span>
                             </label>
                             <label class="option-label">
-                                <input type="radio" name="${perguntaId}" value="Regular" required>
-                                <span>Regular</span>
+                                <input type="radio" name="${perguntaId}" value="3 - Bom" required>
+                                <span>3 - Bom</span>
                             </label>
                             <label class="option-label">
-                                <input type="radio" name="${perguntaId}" value="Ruim" required>
-                                <span>Ruim</span>
+                                <input type="radio" name="${perguntaId}" value="4 - Muito Bom" required>
+                                <span>4 - Muito Bom</span>
                             </label>
                             <label class="option-label">
-                                <input type="radio" name="${perguntaId}" value="Péssimo" required>
-                                <span>Péssimo</span>
+                                <input type="radio" name="${perguntaId}" value="5 - Excelente" required>
+                                <span>5 - Excelente</span>
                             </label>
                         </div>
                         
@@ -775,8 +839,8 @@
                                 <i class="fas fa-comment"></i> Observações (opcional):
                             </label>
                             <textarea id="${perguntaId}_obs" 
-                                      placeholder="Adicione observações sobre esta resposta..."
-                                      rows="2"></textarea>
+                                      placeholder="Adicione observações detalhadas sobre esta resposta..."
+                                      rows="3"></textarea>
                         </div>
                     </div>
                 `;
@@ -795,15 +859,6 @@
                     if (obs && resposta.observacoes) obs.value = resposta.observacoes;
                 });
             }
-            
-            // Preencher textos fixos
-            if (dadosFormulario.textosFixos) {
-                document.getElementById('textoAntesPerguntas').value = dadosFormulario.textosFixos.antesPerguntas || '';
-                document.getElementById('textoDepoisPerguntas').value = dadosFormulario.textosFixos.depoisPerguntas || '';
-                document.getElementById('textoAntesImagens').value = dadosFormulario.textosFixos.antesImagens || '';
-                document.getElementById('textoDepoisImagens').value = dadosFormulario.textosFixos.depoisImagens || '';
-                document.getElementById('textoFinal').value = dadosFormulario.textosFixos.textoFinal || '';
-            }
         }
         
         function gerarUploadImagens() {
@@ -817,7 +872,7 @@
                         <p style="font-size: 0.9rem; color: #718096;">Imagem ${i}</p>
                         <img class="image-preview" id="preview_${i}" alt="Pré-visualização">
                         <input type="file" id="fileInput_${i}" accept="image/*" onchange="previewImage(${i}, this)">
-                        <input type="text" class="image-caption" id="caption_${i}" placeholder="Legenda da imagem..." oninput="salvarLegenda(${i}, this.value)">
+                        <input type="text" class="image-caption" id="caption_${i}" placeholder="Digite a legenda da imagem..." oninput="salvarLegenda(${i}, this.value)">
                         <div class="remove-image" onclick="removerImagem(${i}, event)">
                             <i class="fas fa-times"></i>
                         </div>
@@ -851,9 +906,9 @@
             const file = input.files[0];
             if (!file) return;
             
-            // Validar tamanho (10MB máximo)
-            if (file.size > 10 * 1024 * 1024) {
-                mostrarToast('A imagem deve ter no máximo 10MB', 'error');
+            // Validar tamanho (5MB máximo)
+            if (file.size > 5 * 1024 * 1024) {
+                mostrarToast('A imagem deve ter no máximo 5MB', 'error');
                 return;
             }
             
@@ -878,7 +933,8 @@
                         legenda: caption.value,
                         nome: file.name,
                         tipo: file.type,
-                        tamanho: file.size
+                        tamanho: file.size,
+                        dataUpload: new Date().toISOString()
                     };
                 } else {
                     dadosFormulario.imagens.push({
@@ -887,7 +943,8 @@
                         legenda: caption.value,
                         nome: file.name,
                         tipo: file.type,
-                        tamanho: file.size
+                        tamanho: file.size,
+                        dataUpload: new Date().toISOString()
                     });
                 }
                 
@@ -975,18 +1032,17 @@
         }
         
         function salvarRespostas() {
-            // Coletar textos fixos
-            dadosFormulario.textosFixos = {
-                antesPerguntas: document.getElementById('textoAntesPerguntas').value,
-                depoisPerguntas: document.getElementById('textoDepoisPerguntas').value,
-                antesImagens: document.getElementById('textoAntesImagens').value,
-                depoisImagens: document.getElementById('textoDepoisImagens').value,
-                textoFinal: document.getElementById('textoFinal').value
-            };
+            // Coletar informações do pesquisador (pode ser um modal no futuro)
+            if (!dadosFormulario.informacoesColeta.pesquisador) {
+                dadosFormulario.informacoesColeta.pesquisador = prompt("Digite seu nome completo:");
+                dadosFormulario.informacoesColeta.matricula = prompt("Digite sua matrícula:");
+            }
             
             // Coletar respostas
             const perguntas = perguntasPorFormulario[formularioAtual] || perguntasPorFormulario.A;
-            perguntas.forEach((_, index) => {
+            let todasRespondidas = true;
+            
+            perguntas.forEach((pergunta, index) => {
                 const perguntaNum = index + 1;
                 const perguntaId = `pergunta_${perguntaNum}`;
                 
@@ -995,12 +1051,20 @@
                 
                 if (resposta) {
                     dadosFormulario.respostas[perguntaId] = {
+                        numero: perguntaNum,
+                        pergunta: pergunta,
                         resposta: resposta.value,
-                        observacoes: observacoes,
-                        pergunta: perguntas[index]
+                        observacoes: observacoes
                     };
+                } else {
+                    todasRespondidas = false;
                 }
             });
+            
+            if (!todasRespondidas) {
+                mostrarToast('Responda todas as perguntas antes de salvar', 'error');
+                return;
+            }
             
             // Salvar no localStorage
             localStorage.setItem(`formulario_${formularioAtual}`, JSON.stringify(dadosFormulario));
@@ -1011,8 +1075,6 @@
         
         function salvarImagens() {
             salvarRespostas(); // Salva também as respostas
-            
-            // Já estamos salvando imagens em tempo real
             mostrarToast('Imagens salvas com sucesso! ✅', 'success');
         }
         
@@ -1059,10 +1121,10 @@
                 html += '<div style="margin-bottom: 20px;">';
                 html += '<h4 style="color: #4a5568; margin-bottom: 15px;">Perguntas Respondidas:</h4>';
                 
-                Object.entries(dadosFormulario.respostas).forEach(([perguntaId, dados], index) => {
+                Object.values(dadosFormulario.respostas).forEach(dados => {
                     html += `
                         <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 5px; border-left: 4px solid var(--primary-color);">
-                            <strong>${index + 1}. ${dados.pergunta}</strong><br>
+                            <strong>${dados.numero}. ${dados.pergunta}</strong><br>
                             <span style="color: var(--primary-color);">Resposta: ${dados.resposta}</span>
                             ${dados.observacoes ? `<br><em>Observações: ${dados.observacoes}</em>` : ''}
                         </div>
@@ -1100,84 +1162,345 @@
             resumoImagens.innerHTML = htmlImagens;
         }
         
-        function gerarPDF() {
-            if (!confirm('Gerar relatório PDF com todos os dados?')) return;
+        // ============================================
+        // FUNÇÃO PARA GERAR PDF COM FORMATAÇÃO ABNT
+        // ============================================
+        function gerarPDFABNT() {
+            if (!confirm('Gerar relatório PDF com formatação ABNT?')) return;
             
-            mostrarToast('Gerando PDF... ⏳', 'info');
+            mostrarToast('Gerando PDF ABNT... ⏳', 'info');
             
-            // Simular geração de PDF
-            setTimeout(() => {
-                const nomeArquivo = `Formulario_${formularioAtual}_${new Date().toISOString().slice(0,10)}.pdf`;
-                
-                // Criar conteúdo do PDF simulado
-                let conteudoPDF = `
-                    RELATÓRIO FORMULÁRIO ${formularioAtual}
-                    =====================================
-                    
-                    Data: ${new Date().toLocaleDateString()}
-                    
-                    ${dadosFormulario.textosFixos.antesPerguntas || ''}
-                    
-                    PERGUNTAS E RESPOSTAS:
-                    ----------------------
-                `;
-                
-                // Adicionar perguntas e respostas
-                Object.entries(dadosFormulario.respostas).forEach(([perguntaId, dados], index) => {
-                    conteudoPDF += `
-                    ${index + 1}. ${dados.pergunta}
-                       Resposta: ${dados.resposta}
-                       ${dados.observacoes ? `Observações: ${dados.observacoes}` : ''}
-                    `;
-                });
-                
-                conteudoPDF += `
-                    
-                    ${dadosFormulario.textosFixos.depoisPerguntas || ''}
-                    
-                    ${dadosFormulario.textosFixos.antesImagens || ''}
-                    
-                    IMAGENS:
-                    --------
-                    Total: ${dadosFormulario.imagens ? dadosFormulario.imagens.length : 0} imagens
-                `;
-                
-                // Adicionar informações das imagens
-                if (dadosFormulario.imagens) {
-                    dadosFormulario.imagens.forEach(img => {
-                        conteudoPDF += `
-                    Imagem ${img.index}: ${img.legenda || 'Sem legenda'}
-                        Nome: ${img.nome}
-                        Tamanho: ${(img.tamanho / 1024).toFixed(2)} KB
-                        `;
-                    });
-                }
-                
-                conteudoPDF += `
-                    
-                    ${dadosFormulario.textosFixos.depoisImagens || ''}
-                    
-                    ${dadosFormulario.textosFixos.textoFinal || ''}
-                    
-                    =====================================
-                    Relatório gerado automaticamente pelo Sistema IAT
-                `;
-                
-                // Criar e baixar arquivo
-                const blob = new Blob([conteudoPDF], { type: 'application/pdf' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = nomeArquivo;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                mostrarToast(`PDF "${nomeArquivo}" gerado com sucesso! 📄`, 'success');
-            }, 2000);
+            // Usar jsPDF para gerar PDF mais avançado
+            if (typeof pdfLib === 'undefined') {
+                // Carregar biblioteca jsPDF
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                script.onload = function() {
+                    const script2 = document.createElement('script');
+                    script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js';
+                    script2.onload = gerarPDFComABNT;
+                    document.head.appendChild(script2);
+                };
+                document.head.appendChild(script);
+            } else {
+                gerarPDFComABNT();
+            }
         }
         
+        function gerarPDFComABNT() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Configurações ABNT
+            const margemEsquerda = 30;
+            const margemDireita = 20;
+            const margemSuperior = 40;
+            const larguraUtil = 210 - margemEsquerda - margemDireita;
+            let yPos = margemSuperior;
+            
+            // ============================================
+            // CABEÇALHO EM CADA PÁGINA
+            // ============================================
+            const addHeader = () => {
+                // Imagem do cabeçalho
+                try {
+                    // Se tiver imagem do cabeçalho, adicionar
+                    doc.addImage(IMAGENS_PDF.cabecalho, 'PNG', margemEsquerda, 10, larguraUtil, 20);
+                } catch (e) {
+                    // Cabeçalho textual se imagem falhar
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text("INSTITUTO ÁGUA E TERRA - IAT", 105, 20, { align: 'center' });
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text("Relatório Técnico de Campo", 105, 27, { align: 'center' });
+                    doc.text(`Formulário ${formularioAtual}`, 105, 34, { align: 'center' });
+                }
+                
+                // Linha separadora
+                doc.setLineWidth(0.5);
+                doc.line(margemEsquerda, 38, 210 - margemDireita, 38);
+                yPos = 45;
+            };
+            
+            // ============================================
+            // RODAPÉ EM CADA PÁGINA
+            // ============================================
+            const addFooter = (pageNumber) => {
+                const footerY = 287;
+                
+                // Linha separadora
+                doc.setLineWidth(0.5);
+                doc.line(margemEsquerda, footerY - 15, 210 - margemDireita, footerY - 15);
+                
+                // Imagem do rodapé
+                try {
+                    doc.addImage(IMAGENS_PDF.rodape, 'PNG', margemEsquerda, footerY - 10, larguraUtil, 10);
+                } catch (e) {
+                    // Rodapé textual se imagem falhar
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'italic');
+                    doc.text("Instituto Água e Terra - Secretaria do Desenvolvimento Sustentável e Turismo", 105, footerY - 5, { align: 'center' });
+                }
+                
+                // Número da página
+                doc.setFontSize(9);
+                doc.text(`Página ${pageNumber}`, 190, footerY - 5, { align: 'right' });
+            };
+            
+            // ============================================
+            // FUNÇÃO PARA ADICIONAR NOVA PÁGINA
+            // ============================================
+            const addNewPage = () => {
+                doc.addPage();
+                yPos = margemSuperior;
+                addHeader();
+            };
+            
+            // ============================================
+            // FUNÇÃO PARA ADICIONAR TÍTULO
+            // ============================================
+            const addTitle = (text) => {
+                if (yPos > 250) addNewPage();
+                
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text(text, margemEsquerda, yPos);
+                yPos += 10;
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(11);
+            };
+            
+            // ============================================
+            // FUNÇÃO PARA ADICIONAR TEXTO
+            // ============================================
+            const addText = (text, isBold = false) => {
+                if (yPos > 250) addNewPage();
+                
+                doc.setFont('helvetica', isBold ? 'bold' : 'normal');
+                const lines = doc.splitTextToSize(text, larguraUtil);
+                
+                lines.forEach(line => {
+                    if (yPos > 250) {
+                        addNewPage();
+                    }
+                    doc.text(line, margemEsquerda, yPos);
+                    yPos += 7;
+                });
+                
+                doc.setFont('helvetica', 'normal');
+            };
+            
+            // ============================================
+            // INICIAR DOCUMENTO
+            // ============================================
+            addHeader();
+            
+            // ============================================
+            // CAPA
+            // ============================================
+            addTitle("RELATÓRIO TÉCNICO DE CAMPO");
+            yPos += 5;
+            
+            addText(`Formulário: ${formularioAtual}`, true);
+            addText(`Título: ${document.getElementById('formTitle').textContent}`);
+            addText(`Data da Coleta: ${dadosFormulario.informacoesColeta.data}`);
+            addText(`Hora da Coleta: ${dadosFormulario.informacoesColeta.hora}`);
+            addText(`Pesquisador: ${dadosFormulario.informacoesColeta.pesquisador || 'Não informado'}`);
+            addText(`Matrícula: ${dadosFormulario.informacoesColeta.matricula || 'Não informada'}`);
+            addText(`Data de Geração: ${new Date().toLocaleDateString('pt-BR')}`);
+            addText(`Hora de Geração: ${new Date().toLocaleTimeString('pt-BR')}`);
+            
+            yPos += 15;
+            addText("Documento gerado automaticamente pelo Sistema de Coleta de Dados IAT");
+            
+            // ============================================
+            // RESUMO EXECUTIVO
+            // ============================================
+            addNewPage();
+            addTitle("1. RESUMO EXECUTIVO");
+            addText("Este relatório apresenta os resultados da coleta de dados de campo realizada pelo Instituto Água e Terra (IAT). As informações foram coletadas seguindo protocolos técnicos estabelecidos e estão organizadas conforme as normas da ABNT.");
+            
+            // ============================================
+            // METODOLOGIA
+            // ============================================
+            yPos += 10;
+            addTitle("2. METODOLOGIA");
+            addText("A coleta de dados foi realizada através de formulário padronizado contendo 30 questões específicas para avaliação ambiental. Cada questão foi respondida utilizando escala de 1 a 5, sendo:");
+            addText("1 - Insatisfatório: Condição crítica, requer intervenção imediata");
+            addText("2 - Regular: Condição abaixo do esperado, necessita melhorias");
+            addText("3 - Bom: Condição dentro dos padrões aceitáveis");
+            addText("4 - Muito Bom: Condição acima da média");
+            addText("5 - Excelente: Condição ideal, modelo a ser seguido");
+            addText("Além das respostas quantitativas, foram registradas observações qualitativas para cada item.");
+            
+            // ============================================
+            // INTRODUÇÃO (TEXTO FIXO ANTES)
+            // ============================================
+            addNewPage();
+            addTitle("3. INTRODUÇÃO");
+            addText(TEXTOS_FIXOS.antesPerguntas.replace(/<[^>]*>/g, ' '));
+            
+            // ============================================
+            // RESULTADOS DAS PERGUNTAS
+            // ============================================
+            yPos += 10;
+            addTitle("4. RESULTADOS");
+            
+            if (dadosFormulario.respostas && Object.keys(dadosFormulario.respostas).length > 0) {
+                // Tabela de resultados
+                const tableData = [];
+                Object.values(dadosFormulario.respostas).forEach(resposta => {
+                    tableData.push([
+                        resposta.numero.toString(),
+                        resposta.pergunta,
+                        resposta.resposta,
+                        resposta.observacoes || '-'
+                    ]);
+                });
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Nº', 'Pergunta', 'Resposta', 'Observações']],
+                    body: tableData,
+                    margin: { left: margemEsquerda, right: margemDireita },
+                    headStyles: { fillColor: [44, 122, 71] },
+                    alternateRowStyles: { fillColor: [240, 255, 244] },
+                    styles: { fontSize: 9, cellPadding: 3 },
+                    columnStyles: {
+                        0: { cellWidth: 10 },
+                        1: { cellWidth: 80 },
+                        2: { cellWidth: 25 },
+                        3: { cellWidth: 45 }
+                    },
+                    didDrawPage: function(data) {
+                        // Adicionar cabeçalho e rodapé em cada página da tabela
+                        addHeader();
+                        addFooter(doc.internal.getNumberOfPages());
+                    }
+                });
+                
+                yPos = doc.lastAutoTable.finalY + 10;
+            }
+            
+            // ============================================
+            // CONSIDERAÇÕES (TEXTO FIXO DEPOIS)
+            // ============================================
+            addText("5. CONSIDERAÇÕES");
+            addText(TEXTOS_FIXOS.depoisPerguntas.replace(/<[^>]*>/g, ' '));
+            
+            // ============================================
+            // REGISTRO FOTOGRÁFICO
+            // ============================================
+            addNewPage();
+            addTitle("6. REGISTRO FOTOGRÁFICO");
+            addText(TEXTOS_FIXOS.antesImagens.replace(/<[^>]*>/g, ' '));
+            
+            if (dadosFormulario.imagens && dadosFormulario.imagens.length > 0) {
+                yPos += 10;
+                addText(`Total de imagens registradas: ${dadosFormulario.imagens.length}`);
+                
+                // Lista de imagens
+                dadosFormulario.imagens.forEach((img, index) => {
+                    if (yPos > 200) {
+                        addNewPage();
+                        yPos = margemSuperior;
+                    }
+                    
+                    addText(`Imagem ${index + 1}: ${img.legenda || 'Sem legenda'}`, true);
+                    addText(`Arquivo: ${img.nome} | Tamanho: ${(img.tamanho / 1024).toFixed(2)} KB | Data: ${new Date(img.dataUpload).toLocaleDateString('pt-BR')}`);
+                    yPos += 5;
+                });
+            } else {
+                addText("Nenhuma imagem foi registrada durante a coleta de dados.");
+            }
+            
+            // ============================================
+            // ANÁLISE DAS IMAGENS (TEXTO FIXO DEPOIS)
+            // ============================================
+            yPos += 10;
+            addText("7. ANÁLISE DAS EVIDÊNCIAS VISUAIS");
+            addText(TEXTOS_FIXOS.depoisImagens.replace(/<[^>]*>/g, ' '));
+            
+            // ============================================
+            // CONCLUSÕES
+            // ============================================
+            addNewPage();
+            addTitle("8. CONCLUSÕES");
+            addText(TEXTOS_FIXOS.textoFinal.replace(/<[^>]*>/g, ' '));
+            
+            // ============================================
+            // REFERÊNCIAS
+            // ============================================
+            yPos += 10;
+            addTitle("9. REFERÊNCIAS");
+            addText("ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. NBR 14724: Informação e documentação: Trabalhos acadêmicos: Apresentação. Rio de Janeiro, 2011.");
+            addText("INSTITUTO ÁGUA E TERRA. Manual de Procedimentos de Campo. Curitiba, 2023.");
+            addText("CONAMA. Resolução nº 357, de 17 de março de 2005. Dispõe sobre a classificação dos corpos de água e diretrizes ambientais para o seu enquadramento.");
+            
+            // ============================================
+            // ANEXOS
+            // ============================================
+            if (dadosFormulario.imagens && dadosFormulario.imagens.length > 0) {
+                addNewPage();
+                addTitle("ANEXOS: REGISTROS FOTOGRÁFICOS");
+                addText("As imagens a seguir foram registradas durante a coleta de dados e compõem as evidências visuais do relatório.");
+                
+                // Adicionar miniaturas das imagens (quando possível)
+                let imgY = yPos;
+                let imgX = margemEsquerda;
+                let imgCount = 0;
+                
+                dadosFormulario.imagens.forEach(img => {
+                    try {
+                        if (imgCount > 0 && imgCount % 2 === 0) {
+                            imgY += 60;
+                            imgX = margemEsquerda;
+                        }
+                        
+                        if (imgY > 200) {
+                            addNewPage();
+                            imgY = margemSuperior;
+                            imgX = margemEsquerda;
+                        }
+                        
+                        // Adicionar imagem reduzida
+                        doc.addImage(img.data, 'JPEG', imgX, imgY, 70, 50);
+                        
+                        // Legenda
+                        doc.setFontSize(8);
+                        doc.text(img.legenda.substring(0, 40) + (img.legenda.length > 40 ? '...' : ''), imgX + 35, imgY + 55, { align: 'center' });
+                        
+                        imgX += 80;
+                        imgCount++;
+                    } catch (e) {
+                        console.log('Erro ao adicionar imagem ao PDF:', e);
+                    }
+                });
+            }
+            
+            // ============================================
+            // ADICIONAR RODAPÉ NA ÚLTIMA PÁGINA
+            // ============================================
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
+                addFooter(i);
+            }
+            
+            // ============================================
+            // SALVAR PDF
+            // ============================================
+            const nomeArquivo = `IAT_Form${formularioAtual}_${dadosFormulario.informacoesColeta.pesquisador.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
+            doc.save(nomeArquivo);
+            
+            mostrarToast(`PDF "${nomeArquivo}" gerado com formatação ABNT! 📄`, 'success');
+        }
+        
+        // ============================================
+        // FUNÇÃO DE TOAST
+        // ============================================
         function mostrarToast(mensagem, tipo = 'success') {
             const toast = document.getElementById('toast');
             const icons = {
