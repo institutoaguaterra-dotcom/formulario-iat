@@ -3,392 +3,827 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário IAT - Pesquisa de Campo Offline</title>
+    <title>Formulário IAT - 5 Documentos PDF Automáticos</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/pdf-lib@^1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@^1.1.1/dist/fontkit.umd.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #f5f9ff; color: #333; line-height: 1.6; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,100,0,0.1); overflow: hidden; }
-        header { background: linear-gradient(135deg, #2c7a47, #38a169); color: white; padding: 25px; text-align: center; }
-        .logo { font-size: 2.8rem; margin-bottom: 10px; }
-        h1 { font-size: 1.8rem; margin-bottom: 10px; }
-        .status { background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; display: inline-block; margin-top: 10px; font-size: 0.9rem; }
-        .main { display: grid; grid-template-columns: 1fr 300px; gap: 20px; padding: 25px; }
-        @media (max-width: 768px) { .main { grid-template-columns: 1fr; } }
-        .form-section { background: #f9f9f9; padding: 20px; border-radius: 10px; }
-        .sidebar { background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 5px solid #2c7a47; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c7a47; }
-        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; transition: border 0.3s; }
-        input:focus, select:focus, textarea:focus { border-color: #2c7a47; outline: none; box-shadow: 0 0 0 3px rgba(44,122,71,0.2); }
-        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 16px; }
-        .btn-primary { background: #2c7a47; color: white; }
-        .btn-primary:hover { background: #22543d; }
-        .btn-secondary { background: #4a5568; color: white; }
-        .step { display: none; }
-        .step.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .steps { display: flex; justify-content: center; margin: 25px 0; }
-        .step-circle { width: 35px; height: 35px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 10px; }
-        .step-circle.active { background: #2c7a47; color: white; }
-        .summary { background: white; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #e2e8f0; }
-        .summary-item { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #e2e8f0; }
-        .install-btn { background: #3182ce; color: white; width: 100%; margin-top: 15px; }
-        footer { text-align: center; padding: 20px; background: #f7fafc; color: #718096; font-size: 0.9rem; border-top: 1px solid #e2e8f0; }
-        .toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; background: #2c7a47; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: none; z-index: 1000; }
-        .toast.show { display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s; }
-        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        :root {
+            --iat-green: #2c7a47;
+            --iat-green-light: #38a169;
+            --iat-dark: #22543d;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%); color: #2d3748; line-height: 1.6; padding: 20px; min-height: 100vh; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        header { 
+            background: linear-gradient(135deg, var(--iat-green), var(--iat-dark));
+            color: white; 
+            padding: 30px; 
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(44, 122, 71, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        .logo-section { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px; }
+        .logo { font-size: 3.5rem; color: white; }
+        .header-text h1 { font-size: 2.2rem; margin-bottom: 10px; font-weight: 700; }
+        .header-text p { opacity: 0.9; font-size: 1.1rem; }
+        
+        .status-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 20px;
+            border-radius: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 992px) {
+            .main-content { grid-template-columns: 1fr; }
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+        }
+        
+        .pdf-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--iat-green);
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            color: var(--iat-dark);
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--iat-dark);
+            font-size: 1rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--iat-green-light);
+            box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.2);
+            background: white;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f0fff4;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .checkbox-label:hover {
+            background: #e6fffa;
+        }
+        
+        .pdf-cards {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .pdf-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .pdf-card:hover {
+            border-color: var(--iat-green-light);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .pdf-card.active {
+            border-color: var(--iat-green);
+            background: #f0fff4;
+        }
+        
+        .pdf-icon {
+            font-size: 2.5rem;
+            color: var(--iat-green);
+            margin-bottom: 15px;
+        }
+        
+        .pdf-title {
+            font-weight: 700;
+            color: var(--iat-dark);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .pdf-desc {
+            color: #718096;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .pdf-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        
+        .pdf-status.complete {
+            color: var(--iat-green);
+        }
+        
+        .pdf-status.incomplete {
+            color: #e53e3e;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--iat-green);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--iat-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 122, 71, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #4a5568;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #38a169;
+            color: white;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        .signature-container {
+            margin-top: 20px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 20px;
+            background: #fafafa;
+        }
+        
+        #signatureCanvas {
+            width: 100%;
+            height: 150px;
+            background: white;
+            border-radius: 5px;
+            cursor: crosshair;
+        }
+        
+        .action-buttons {
+            display: grid;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .data-preview {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .preview-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .preview-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .preview-label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .preview-value {
+            color: #2d3748;
+            word-break: break-word;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            margin-top: 30px;
+            color: #718096;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 18px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            max-width: 400px;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            background: var(--iat-green);
+        }
+        
+        .toast.error {
+            background: #e53e3e;
+        }
+        
+        .toast.info {
+            background: #3182ce;
+        }
+        
+        .progress-container {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 10px;
+            margin: 25px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--iat-green-light), var(--iat-green));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .required::after {
+            content: " *";
+            color: #e53e3e;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="logo">
-                <i class="fas fa-tint"></i>
-            </div>
-            <h1>Instituto Água e Terra - IAT</h1>
-            <p>Formulário de Pesquisa de Campo - Versão Offline</p>
-            <div class="status" id="status">
-                <i class="fas fa-wifi"></i> <span>Online</span>
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-water"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Instituto Água e Terra - IAT</h1>
+                    <p>Sistema Integrado de Preenchimento Automático de Formulários</p>
+                    <div class="status-badge" id="statusIndicator">
+                        <i class="fas fa-wifi"></i>
+                        <span id="statusText">Conectado</span>
+                    </div>
+                </div>
             </div>
         </header>
-        
-        <div class="main">
-            <section class="form-section">
-                <div class="steps">
-                    <div class="step-circle active">1</div>
-                    <div class="step-circle">2</div>
-                    <div class="step-circle">3</div>
-                    <div class="step-circle">4</div>
-                </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="formProgress"></div>
+        </div>
+
+        <div class="main-content">
+            <div class="form-container">
+                <h2 class="section-title">
+                    <i class="fas fa-edit"></i> Dados da Pesquisa de Campo
+                </h2>
                 
-                <form id="iatForm">
-                    <!-- Passo 1 -->
-                    <div class="step active" id="step1">
-                        <h2><i class="fas fa-user"></i> Identificação</h2>
-                        <div class="form-group">
-                            <label for="nome">Nome do Pesquisador *</label>
-                            <input type="text" id="nome" required placeholder="Digite seu nome completo">
-                        </div>
-                        <div class="form-group">
-                            <label for="matricula">Matrícula/Registro *</label>
-                            <input type="text" id="matricula" required placeholder="Sua matrícula no IAT">
-                        </div>
-                        <div class="form-group">
-                            <label for="data">Data da Pesquisa *</label>
-                            <input type="date" id="data" required>
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="nextStep()">
-                            Próximo <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
+                <div class="form-section">
+                    <h3 class="section-title" style="font-size: 1.2rem;">
+                        <i class="fas fa-user-circle"></i> Informações do Pesquisador
+                    </h3>
                     
-                    <!-- Passo 2 -->
-                    <div class="step" id="step2">
-                        <h2><i class="fas fa-map-marker-alt"></i> Localização</h2>
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="municipio">Município *</label>
-                            <input type="text" id="municipio" required placeholder="Nome do município">
+                            <label class="form-label required">Nome Completo</label>
+                            <input type="text" id="pesquisadorNome" class="form-control" placeholder="Digite seu nome completo" data-pdf-field="F1.nome,F2.responsavel,F3.coletador,F4.tec_responsavel,F5.solicitante">
                         </div>
                         <div class="form-group">
-                            <label for="latitude">Latitude *</label>
-                            <input type="text" id="latitude" required placeholder="Ex: -25.4284">
-                        </div>
-                        <div class="form-group">
-                            <label for="longitude">Longitude *</label>
-                            <input type="text" id="longitude" required placeholder="Ex: -49.2733">
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep()">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="nextStep()">
-                                Próximo <i class="fas fa-arrow-right"></i>
-                            </button>
+                            <label class="form-label required">Matrícula IAT</label>
+                            <input type="text" id="matriculaIAT" class="form-control" placeholder="Ex: IAT-12345" data-pdf-field="F1.matricula,F2.matricula_resp,F4.matricula_tecnico">
                         </div>
                     </div>
                     
-                    <!-- Passo 3 -->
-                    <div class="step" id="step3">
-                        <h2><i class="fas fa-water"></i> Características</h2>
+                    <div class="form-row">
                         <div class="form-group">
-                            <label>Tipo de Corpo Hídrico *</label><br>
-                            <label><input type="radio" name="tipo" value="Rio" required> Rio</label>
-                            <label><input type="radio" name="tipo" value="Lago"> Lago</label>
-                            <label><input type="radio" name="tipo" value="Nascente"> Nascente</label>
-                            <label><input type="radio" name="tipo" value="Reservatório"> Reservatório</label>
+                            <label class="form-label required">Data da Pesquisa</label>
+                            <input type="date" id="dataPesquisa" class="form-control" data-pdf-field="F1.data,F2.data_vistoria,F3.data_coleta,F4.data_emissao,F5.data_solicitacao">
                         </div>
                         <div class="form-group">
-                            <label for="observacoes">Observações</label>
-                            <textarea id="observacoes" rows="4" placeholder="Descreva as características do local..."></textarea>
+                            <label class="form-label">CPF</label>
+                            <input type="text" id="cpfPesquisador" class="form-control" placeholder="000.000.000-00" data-pdf-field="F1.cpf,F4.cpf_tecnico">
                         </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep()">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="nextStep()">
-                                Próximo <i class="fas fa-arrow-right"></i>
-                            </button>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title" style="font-size: 1.2rem;">
+                        <i class="fas fa-map-marked-alt"></i> Localização
+                    </h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required">Município</label>
+                            <input type="text" id="municipio" class="form-control" placeholder="Nome do município" data-pdf-field="F2.municipio,F3.local_coleta,F4.local_analise,F5.municipio_obra">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required">Bacia Hidrográfica</label>
+                            <select id="baciaHidrografica" class="form-control" data-pdf-field="F2.bacia,F4.bacia_hidrografica">
+                                <option value="">Selecione...</option>
+                                <option value="Paraná">Bacia do Paraná</option>
+                                <option value="Iguaçu">Bacia do Iguaçu</option>
+                                <option value="Paranapanema">Bacia do Paranapanema</option>
+                                <option value="Ivaí">Bacia do Ivaí</option>
+                                <option value="Piquiri">Bacia do Piquiri</option>
+                                <option value="Tibagi">Bacia do Tibagi</option>
+                            </select>
                         </div>
                     </div>
                     
-                    <!-- Passo 4 -->
-                    <div class="step" id="step4">
-                        <h2><i class="fas fa-file-pdf"></i> Finalização</h2>
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="assinatura">Assinatura Digital</label>
-                            <canvas id="canvas" width="500" height="200" style="border: 2px dashed #ccc; border-radius: 8px; cursor: crosshair;"></canvas>
-                            <button type="button" class="btn btn-secondary" onclick="limparAssinatura()" style="margin-top: 10px;">
-                                <i class="fas fa-eraser"></i> Limpar
-                            </button>
+                            <label class="form-label required">Latitude</label>
+                            <input type="text" id="latitude" class="form-control" placeholder="-25.4284" data-pdf-field="F2.latitude,F3.coord_lat,F4.coordenada_lat">
                         </div>
                         <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="termo" required>
-                                Confirmo que os dados estão corretos *
+                            <label class="form-label required">Longitude</label>
+                            <input type="text" id="longitude" class="form-control" placeholder="-49.2733" data-pdf-field="F2.longitude,F3.coord_long,F4.coordenada_long">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Ponto de Referência</label>
+                        <textarea id="pontoReferencia" class="form-control" rows="3" placeholder="Descreva pontos de referência para localização" data-pdf-field="F2.ponto_referencia,F3.referencia_local"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title" style="font-size: 1.2rem;">
+                        <i class="fas fa-flask"></i> Parâmetros Avaliados
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">Tipo de Corpo Hídrico</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="radio" name="tipoCorpo" value="Rio" data-pdf-field="F2.tipo_corpo,F3.tipo_corpo,F4.tipo_recurso">
+                                <span>Rio/Curso d'água</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="radio" name="tipoCorpo" value="Lago/Lagoa" data-pdf-field="F2.tipo_corpo,F3.tipo_corpo,F4.tipo_recurso">
+                                <span>Lago/Lagoa</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="radio" name="tipoCorpo" value="Nascente" data-pdf-field="F2.tipo_corpo,F3.tipo_corpo,F4.tipo_recurso">
+                                <span>Nascente</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="radio" name="tipoCorpo" value="Reservatório" data-pdf-field="F2.tipo_corpo,F3.tipo_corpo,F4.tipo_recurso">
+                                <span>Reservatório</span>
                             </label>
                         </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep()">
-                                <i class="fas fa-arrow-left"></i> Voltar
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Parâmetros Analisados</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="pH" data-pdf-field="F3.parametros">
+                                <span>pH</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="OD" data-pdf-field="F3.parametros">
+                                <span>Oxigênio Dissolvido (OD)</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="Turbidez" data-pdf-field="F3.parametros">
+                                <span>Turbidez</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="Condutividade" data-pdf-field="F3.parametros">
+                                <span>Condutividade</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="Temperatura" data-pdf-field="F3.parametros">
+                                <span>Temperatura</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="Coliformes" data-pdf-field="F3.parametros">
+                                <span>Coliformes</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Observações Técnicas</label>
+                        <textarea id="observacoesTecnicas" class="form-control" rows="4" placeholder="Descreva as condições do local, anomalias encontradas, etc." data-pdf-field="F2.observacoes,F4.conclusoes,F5.condicoes"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title" style="font-size: 1.2rem;">
+                        <i class="fas fa-signature"></i> Assinatura Digital
+                    </h3>
+                    
+                    <div class="signature-container">
+                        <p class="form-label">Assine no quadro abaixo:</p>
+                        <canvas id="signatureCanvas"></canvas>
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <button type="button" class="btn btn-secondary" onclick="clearSignature()">
+                                <i class="fas fa-eraser"></i> Limpar Assinatura
                             </button>
-                            <button type="button" class="btn btn-primary" onclick="gerarPDF()">
-                                <i class="fas fa-download"></i> Gerar PDF
+                            <button type="button" class="btn btn-secondary" onclick="saveSignature()">
+                                <i class="fas fa-save"></i> Salvar Assinatura
                             </button>
                         </div>
                     </div>
-                </form>
-            </section>
-            
-            <aside class="sidebar">
-                <h3><i class="fas fa-list"></i> Resumo</h3>
-                <div id="resumo" class="summary">
-                    Preencha o formulário para ver o resumo aqui.
+                </div>
+            </div>
+
+            <div class="pdf-panel">
+                <h2 class="section-title">
+                    <i class="fas fa-file-pdf"></i> Documentos IAT
+                </h2>
+                <p style="color: #718096; margin-bottom: 25px;">Os 5 formulários serão preenchidos automaticamente conforme você digita.</p>
+                
+                <div class="pdf-cards">
+                    <div class="pdf-card active" onclick="selectPDF(1)" id="pdfCard1">
+                        <div class="pdf-icon">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div class="pdf-title">F1 - Declaração de Atividade</div>
+                        <div class="pdf-desc">Declaração de atividades ambientais realizadas em campo</div>
+                        <div class="pdf-status incomplete" id="pdfStatus1">
+                            <i class="fas fa-clock"></i> <span>Aguardando dados</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pdf-card" onclick="selectPDF(2)" id="pdfCard2">
+                        <div class="pdf-icon">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="pdf-title">F2 - Relatório de Vistoria</div>
+                        <div class="pdf-desc">Registro detalhado da vistoria técnica realizada</div>
+                        <div class="pdf-status incomplete" id="pdfStatus2">
+                            <i class="fas fa-clock"></i> <span>Aguardando dados</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pdf-card" onclick="selectPDF(3)" id="pdfCard3">
+                        <div class="pdf-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <div class="pdf-title">F3 - Coleta de Amostras</div>
+                        <div class="pdf-desc">Registro de coleta de amostras para análise laboratorial</div>
+                        <div class="pdf-status incomplete" id="pdfStatus3">
+                            <i class="fas fa-clock"></i> <span>Aguardando dados</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pdf-card" onclick="selectPDF(4)" id="pdfCard4">
+                        <div class="pdf-icon">
+                            <i class="fas fa-file-medical-alt"></i>
+                        </div>
+                        <div class="pdf-title">F4 - Laudo Técnico</div>
+                        <div class="pdf-desc">Laudo técnico com análises e conclusões</div>
+                        <div class="pdf-status incomplete" id="pdfStatus4">
+                            <i class="fas fa-clock"></i> <span>Aguardando dados</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pdf-card" onclick="selectPDF(5)" id="pdfCard5">
+                        <div class="pdf-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="pdf-title">F5 - Autorização Ambiental</div>
+                        <div class="pdf-desc">Solicitação de autorização ambiental para atividades</div>
+                        <div class="pdf-status incomplete" id="pdfStatus5">
+                            <i class="fas fa-clock"></i> <span>Aguardando dados</span>
+                        </div>
+                    </div>
                 </div>
                 
-                <h3 style="margin-top: 25px;"><i class="fas fa-tools"></i> Ações</h3>
-                <button class="btn btn-secondary" onclick="salvarLocal()" style="width: 100%; margin-bottom: 10px;">
-                    <i class="fas fa-save"></i> Salvar Localmente
-                </button>
-                <button class="btn btn-secondary" onclick="carregarLocal()" style="width: 100%; margin-bottom: 10px;">
-                    <i class="fas fa-folder-open"></i> Carregar Dados
-                </button>
-                <button class="btn btn-secondary" onclick="limparFormulario()" style="width: 100%;">
-                    <i class="fas fa-trash"></i> Limpar Tudo
-                </button>
-                
-                <div style="margin-top: 25px; padding: 15px; background: #e6fffa; border-radius: 8px; text-align: center;">
-                    <h4><i class="fas fa-mobile-alt"></i> Instalar no Celular</h4>
-                    <p style="font-size: 0.9rem; margin: 10px 0;">Para usar como app:</p>
-                    <button class="btn install-btn" onclick="instalarPWA()">
-                        <i class="fas fa-download"></i> Instalar App
+                <div class="action-buttons">
+                    <button class="btn btn-success btn-block" onclick="generateAllPDFs()">
+                        <i class="fas fa-download"></i> Gerar Todos os PDFs
                     </button>
-                    <p style="font-size: 0.8rem; margin-top: 10px; color: #4a5568;">
-                        No Chrome Android: Menu → "Adicionar à tela inicial"
-                    </p>
+                    <button class="btn btn-primary btn-block" onclick="generateSelectedPDF()">
+                        <i class="fas fa-file-export"></i> Gerar PDF Selecionado
+                    </button>
+                    <button class="btn btn-secondary btn-block" onclick="saveAllData()">
+                        <i class="fas fa-database"></i> Salvar Todos os Dados
+                    </button>
+                    <button class="btn btn-secondary btn-block" onclick="clearAllData()">
+                        <i class="fas fa-broom"></i> Limpar Todos os Dados
+                    </button>
                 </div>
-            </aside>
+                
+                <div class="data-preview">
+                    <h3 style="color: var(--iat-dark); margin-bottom: 15px; font-size: 1.1rem;">
+                        <i class="fas fa-eye"></i> Visualização dos Dados
+                    </h3>
+                    <div id="dataPreview">
+                        <p style="color: #a0aec0; font-style: italic;">Os dados aparecerão aqui conforme preenchimento...</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        
+
         <footer>
-            <p>© 2023 Instituto Água e Terra (IAT) - Paraná</p>
-            <p>Este aplicativo funciona offline. Dados salvos localmente no dispositivo.</p>
+            <p><strong>Instituto Água e Terra - IAT</strong> | Secretaria do Desenvolvimento Sustentável e do Turismo</p>
+            <p>Sistema de Preenchimento Automático de Formulários | Versão 1.0</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                <i class="fas fa-info-circle"></i> Os 5 formulários PDF são preenchidos automaticamente em tempo real
+            </p>
         </footer>
     </div>
-    
-    <div class="toast" id="toast"></div>
+
+    <div class="toast" id="toastMessage"></div>
 
     <script>
-        let passoAtual = 1;
-        const ctx = document.getElementById('canvas').getContext('2d');
-        let desenhando = false;
-        let dados = {};
+        // ================= CONFIGURAÇÃO INICIAL =================
+        let formData = {
+            F1: {}, F2: {}, F3: {}, F4: {}, F5: {}
+        };
         
-        document.getElementById('data').valueAsDate = new Date();
+        let selectedPDF = 1;
+        let signatureData = null;
+        let isDrawing = false;
+        const ctx = document.getElementById('signatureCanvas').getContext('2d');
         
-        document.getElementById('canvas').addEventListener('mousedown', iniciarDesenho);
-        document.getElementById('canvas').addEventListener('mousemove', desenhar);
-        document.getElementById('canvas').addEventListener('mouseup', pararDesenho);
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar assinatura
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000';
+            
+            // Configurar canvas
+            const canvas = document.getElementById('signatureCanvas');
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            
+            // Data atual como padrão
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dataPesquisa').value = today;
+            
+            // Atualizar dados em tempo real
+            document.querySelectorAll('input, textarea, select').forEach(element => {
+                element.addEventListener('input', updateFormData);
+                element.addEventListener('change', updateFormData);
+            });
+            
+            // Carregar dados salvos
+            loadSavedData();
+            
+            // Atualizar status de conexão
+            updateConnectionStatus();
+            window.addEventListener('online', updateConnectionStatus);
+            window.addEventListener('offline', updateConnectionStatus);
+        });
         
-        function iniciarDesenho(e) {
-            desenhando = true;
-            ctx.beginPath();
-            ctx.moveTo(e.offsetX, e.offsetY);
-        }
-        
-        function desenhar(e) {
-            if (!desenhando) return;
-            ctx.lineTo(e.offsetX, e.offsetY);
-            ctx.stroke();
-        }
-        
-        function pararDesenho() {
-            desenhando = false;
-        }
-        
-        function limparAssinatura() {
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        }
-        
-        function nextStep() {
-            if (passoAtual < 4) {
-                document.getElementById(`step${passoAtual}`).classList.remove('active');
-                document.querySelectorAll('.step-circle')[passoAtual-1].classList.remove('active');
-                passoAtual++;
-                document.getElementById(`step${passoAtual}`).classList.add('active');
-                document.querySelectorAll('.step-circle')[passoAtual-1].classList.add('active');
-                salvarDados();
-                atualizarResumo();
-            }
-        }
-        
-        function prevStep() {
-            if (passoAtual > 1) {
-                document.getElementById(`step${passoAtual}`).classList.remove('active');
-                document.querySelectorAll('.step-circle')[passoAtual-1].classList.remove('active');
-                passoAtual--;
-                document.getElementById(`step${passoAtual}`).classList.add('active');
-                document.querySelectorAll('.step-circle')[passoAtual-1].classList.add('active');
-            }
-        }
-        
-        function salvarDados() {
-            dados = {
-                nome: document.getElementById('nome').value,
-                matricula: document.getElementById('matricula').value,
-                data: document.getElementById('data').value,
-                municipio: document.getElementById('municipio').value,
-                latitude: document.getElementById('latitude').value,
-                longitude: document.getElementById('longitude').value,
-                tipo: document.querySelector('input[name="tipo"]:checked')?.value,
-                observacoes: document.getElementById('observacoes').value
+        // ================= ATUALIZAÇÃO DE DADOS EM TEMPO REAL =================
+        function updateFormData() {
+            // Coletar todos os dados do formulário
+            const fieldMapping = {
+                pesquisadorNome: ['F1.nome', 'F2.responsavel', 'F3.coletador', 'F4.tec_responsavel', 'F5.solicitante'],
+                matriculaIAT: ['F1.matricula', 'F2.matricula_resp', 'F4.matricula_tecnico'],
+                dataPesquisa: ['F1.data', 'F2.data_vistoria', 'F3.data_coleta', 'F4.data_emissao', 'F5.data_solicitacao'],
+                cpfPesquisador: ['F1.cpf', 'F4.cpf_tecnico'],
+                municipio: ['F2.municipio', 'F3.local_coleta', 'F4.local_analise', 'F5.municipio_obra'],
+                baciaHidrografica: ['F2.bacia', 'F4.bacia_hidrografica'],
+                latitude: ['F2.latitude', 'F3.coord_lat', 'F4.coordenada_lat'],
+                longitude: ['F2.longitude', 'F3.coord_long', 'F4.coordenada_long'],
+                pontoReferencia: ['F2.ponto_referencia', 'F3.referencia_local'],
+                observacoesTecnicas: ['F2.observacoes', 'F4.conclusoes', 'F5.condicoes']
             };
+            
+            // Atualizar cada campo
+            Object.keys(fieldMapping).forEach(fieldId => {
+                const element = document.getElementById(fieldId);
+                if (element) {
+                    const value = element.value;
+                    fieldMapping[fieldId].forEach(pdfField => {
+                        const [form, field] = pdfField.split('.');
+                        if (form && field) {
+                            formData[form][field] = value;
+                        }
+                    });
+                }
+            });
+            
+            // Tratar radios (tipo de corpo hídrico)
+            const tipoCorpo = document.querySelector('input[name="tipoCorpo"]:checked');
+            if (tipoCorpo) {
+                formData.F2.tipo_corpo = tipoCorpo.value;
+                formData.F3.tipo_corpo = tipoCorpo.value;
+                formData.F4.tipo_recurso = tipoCorpo.value;
+            }
+            
+            // Tratar checkboxes (parâmetros)
+            const parametros = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(cb => cb.value)
+                .join(', ');
+            formData.F3.parametros = parametros;
+            
+            // Atualizar visualização e status
+            updateDataPreview();
+            updatePDFStatus();
+            updateProgress();
+            saveToLocalStorage();
         }
         
-        function atualizarResumo() {
-            salvarDados();
+        // ================= VISUALIZAÇÃO DE DADOS =================
+        function updateDataPreview() {
+            const preview = document.getElementById('dataPreview');
             let html = '';
-            if (dados.nome) html += `<div class="summary-item"><strong>Pesquisador:</strong><br>${dados.nome}</div>`;
-            if (dados.data) html += `<div class="summary-item"><strong>Data:</strong><br>${dados.data}</div>`;
-            if (dados.municipio) html += `<div class="summary-item"><strong>Município:</strong><br>${dados.municipio}</div>`;
-            if (dados.latitude && dados.longitude) html += `<div class="summary-item"><strong>Coordenadas:</strong><br>${dados.latitude}, ${dados.longitude}</div>`;
-            if (dados.tipo) html += `<div class="summary-item"><strong>Tipo:</strong><br>${dados.tipo}</div>`;
-            document.getElementById('resumo').innerHTML = html || 'Preencha o formulário para ver o resumo aqui.';
+            
+            // Dados básicos
+            if (formData.F1.nome) {
+                html += `<div class="preview-item">
+                    <div class="preview-label">Pesquisador:</div>
+                    <div class="preview-value">${formData.F1.nome}</div>
+                </div>`;
+            }
+            
+            if (formData.F1.matricula) {
+                html += `<div class="preview-item">
+                    <div class="preview-label">Matrícula IAT:</div>
+                    <div class="preview-value">${formData.F1.matricula}</div>
+                </div>`;
+            }
+            
+            if (formData.F2.municipio) {
+                html += `<div class="preview-item">
+                    <div class="preview-label">Município:</div>
+                    <div class="preview-value">${formData.F2.municipio}</div>
+                </div>`;
+            }
+            
+            if (formData.F2.latitude && formData.F2.longitude) {
+                html += `<div class="preview-item">
+                    <div class="preview-label">Coordenadas:</div>
+                    <div class="preview-value">${formData.F2.latitude}, ${formData.F2.longitude}</div>
+                </div>`;
+            }
+            
+            if (formData.F2.tipo_corpo) {
+                html += `<div class="preview-item">
+                    <div class="preview-label">Tipo de Corpo Hídrico:</div>
+                    <div class="preview-value">${formData.F2.tipo_corpo}</div>
+                </div>`;
+            }
+            
+            preview.innerHTML = html || '<p style="color: #a0aec0; font-style: italic;">Os dados aparecerão aqui conforme preenchimento...</p>';
         }
         
-        function salvarLocal() {
-            salvarDados();
-            localStorage.setItem('iatFormData', JSON.stringify(dados));
-            mostrarToast('Dados salvos localmente! ✅');
-        }
-        
-        function carregarLocal() {
-            const saved = localStorage.getItem('iatFormData');
-            if (saved) {
-                dados = JSON.parse(saved);
-                Object.keys(dados).forEach(key => {
-                    const el = document.getElementById(key);
-                    if (el) el.value = dados[key];
-                    if (key === 'tipo') {
-                        document.querySelector(`input[name="tipo"][value="${dados.tipo}"]`).checked = true;
-                    }
-                });
-                atualizarResumo();
-                mostrarToast('Dados carregados! 📂');
-            } else {
-                mostrarToast('Nenhum dado salvo encontrado.', 'error');
+        // ================= STATUS DOS PDFs =================
+        function updatePDFStatus() {
+            for (let i = 1; i <= 5; i++) {
+                const formKey = `F${i}`;
+                const statusElement = document.getElementById(`pdfStatus${i}`);
+                const cardElement = document.getElementById(`pdfCard${i}`);
+                
+                const requiredFields = getRequiredFields(formKey);
+                const completedFields = requiredFields.filter(field => 
+                    formData[formKey][field] && formData[formKey][field].toString().trim() !== ''
+                );
+                
+                const completionRate = requiredFields.length > 0 
+                    ? (completedFields.length / requiredFields.length) * 100 
+                    : 0;
+                
+                if (completionRate >= 100) {
+                    statusElement.innerHTML = `<i class="fas fa-check-circle"></i> <span>Completo (100%)</span>`;
+                    statusElement.className = 'pdf-status complete';
+                } else if (completionRate > 0) {
+                    statusElement.innerHTML = `<i class="fas fa-spinner"></i> <span>${Math.round(completionRate)}% preenchido</span>`;
+                    statusElement.className = 'pdf-status complete';
+                } else {
+                    statusElement.innerHTML = `<i class="fas fa-clock"></i> <span>Aguardando dados</span>`;
+                    statusElement.className = 'pdf-status incomplete';
+                }
+                
+                // Destacar card do PDF selecionado
+                if (i === selectedPDF) {
+                    cardElement.classList.add('active');
+                } else {
+                    cardElement.classList.remove('active');
+                }
             }
         }
         
-        function limparFormulario() {
-            if (confirm('Tem certeza que quer limpar todos os dados?')) {
-                document.getElementById('iatForm').reset();
-                limparAssinatura();
-                localStorage.removeItem('iatFormData');
-                dados = {};
-                atualizarResumo();
-                mostrarToast('Formulário limpo! 🗑️');
-            }
-        }
-        
-        function gerarPDF() {
-            if (!document.getElementById('termo').checked) {
-                mostrarToast('Marque a confirmação antes de gerar PDF.', 'error');
-                return;
-            }
-            salvarLocal();
-            mostrarToast('Gerando PDF IAT... ⏳');
-            setTimeout(() => {
-                const nomeArquivo = `IAT_${dados.nome || 'Formulario'}_${new Date().toISOString().slice(0,10)}.pdf`;
-                const blob = new Blob(['PDF Simulado - Em produção será gerado PDF real do IAT'], {type: 'application/pdf'});
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = nomeArquivo;
-                link.click();
-                mostrarToast('PDF gerado com sucesso! 📄');
-            }, 1500);
-        }
-        
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
-        
-        function instalarPWA() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        mostrarToast('App instalado com sucesso! 📱');
-                    }
-                    deferredPrompt = null;
-                });
-            } else {
-                mostrarToast('Use o menu do navegador para instalar', 'info');
-            }
-        }
-        
-        function atualizarConexao() {
-            const status = document.getElementById('status');
-            if (navigator.onLine) {
-                status.innerHTML = '<i class="fas fa-wifi"></i> Online';
-                status.style.background = 'rgba(56, 161, 105, 0.3)';
-            } else {
-                status.innerHTML = '<i class="fas fa-wifi-slash"></i> Offline';
-                status.style.background = 'rgba(229, 62, 62, 0.3)';
-            }
-        }
-        
-        window.addEventListener('online', atualizarConexao);
-        window.addEventListener('offline', atualizarConexao);
-        atualizarConexao();
-        
-        function mostrarToast(mensagem, tipo = 'success') {
-            const toast = document.getElementById('toast');
-            toast.innerHTML = `<i class="fas fa-${tipo === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${mensagem}`;
-            toast.className = `toast show ${tipo}`;
-            setTimeout(() => {
-                toast.className = 'toast';
-            }, 3000);
-        }
-        
-        document.querySelectorAll('input, textarea, select').forEach(el => {
-            el.addEventListener('input', atualizarResumo);
-        });
-        
-        document.querySelectorAll('input[type="radio"]').forEach(el => {
-            el.addEventListener('change', atualizarResumo);
-        });
-        
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('Service Worker registrado'))
-                .catch(err => console.log('Erro SW:', err));
-        }
-        
-        atualizarResumo();
-    </script>
-</body>
-</html>
+        function getRequiredFields(formKey) {
+            const fieldRequirements = {
+                F1: ['nome', 'matricula
