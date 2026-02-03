@@ -3,437 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário IAT - Pesquisa de Campo Offline</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Sistema de Formulários IAT</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #f5f9ff; color: #333; line-height: 1.6; padding: 20px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
         
-        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,100,0,0.1); overflow: hidden; }
+        :root {
+            --primary-color: #2c7a47;
+            --secondary-color: #38a169;
+            --accent-color: #3182ce;
+            --light-color: #f7fafc;
+            --dark-color: #2d3748;
+        }
         
-        header { background: linear-gradient(135deg, #2c7a47, #38a169); color: white; padding: 25px; text-align: center; }
-        .logo { font-size: 2.8rem; margin-bottom: 10px; }
-        h1 { font-size: 1.8rem; margin-bottom: 10px; }
+        body {
+            background: linear-gradient(135deg, #f5f9ff 0%, #e6f2ff 100%);
+            color: var(--dark-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
         
-        .status { background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; display: inline-block; margin-top: 10px; font-size: 0.9rem; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
         
-        .main { display: grid; grid-template-columns: 1fr 300px; gap: 20px; padding: 25px; }
-        @media (max-width: 768px) { .main { grid-template-columns: 1fr; } }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
         
-        .form-section { background: #f9f9f9; padding: 20px; border-radius: 10px; }
-        .sidebar { background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 5px solid #2c7a47; }
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 0%, rgba(44,122,71,0.05) 100%);
+            z-index: 0;
+        }
         
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c7a47; }
-        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; transition: border 0.3s; }
-        input:focus, select:focus, textarea:focus { border-color: #2c7a47; outline: none; box-shadow: 0 0 0 3px rgba(44,122,71,0.2); }
+        .logo {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
         
-        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 16px; }
-        .btn-primary { background: #2c7a47; color: white; }
-        .btn-primary:hover { background: #22543d; }
-        .btn-secondary { background: #4a5568; color: white; }
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
         
-        .step { display: none; }
-        .step.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .subtitle {
+            font-size: 1.2rem;
+            color: #718096;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
         
-        .steps { display: flex; justify-content: center; margin: 25px 0; }
-        .step-circle { width: 35px; height: 35px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 10px; }
-        .step-circle.active { background: #2c7a47; color: white; }
+        .form-options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
         
-        .summary { background: white; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #e2e8f0; }
-        .summary-item { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #e2e8f0; }
+        .form-option-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+        }
         
-        .install-btn { background: #3182ce; color: white; width: 100%; margin-top: 15px; }
+        .form-option-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-color);
+            box-shadow: 0 15px 30px rgba(44,122,71,0.15);
+        }
         
-        footer { text-align: center; padding: 20px; background: #f7fafc; color: #718096; font-size: 0.9rem; border-top: 1px solid #e2e8f0; }
+        .form-icon {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
         
-        .toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; background: #2c7a47; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: none; z-index: 1000; }
-        .toast.show { display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s; }
-        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .form-letter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .form-title {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .form-description {
+            color: #718096;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .instructions {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .instructions h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .instructions li {
+            margin-bottom: 15px;
+            color: #4a5568;
+        }
+        
+        .instructions strong {
+            color: var(--primary-color);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .form-options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .form-option-card {
+                height: 200px;
+                padding: 20px;
+            }
+        }
+        
+        .status-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(44,122,71,0.3);
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
+    <div class="status-badge" id="status">
+        <i class="fas fa-wifi"></i> <span>Online</span>
+    </div>
+    
     <div class="container">
         <header>
             <div class="logo">
-                <i class="fas fa-tint"></i>
+                <i class="fas fa-file-alt"></i>
             </div>
-            <h1>Instituto Água e Terra - IAT</h1>
-            <p>Formulário de Pesquisa de Campo - Versão Offline</p>
-            <div class="status" id="status">
-                <i class="fas fa-wifi"></i> <span>Online</span>
-            </div>
+            <h1>Sistema de Formulários IAT</h1>
+            <p class="subtitle">Selecione o formulário que deseja preencher. Cada formulário contém 30 perguntas e 15 imagens.</p>
         </header>
         
-        <div class="main">
-            <section class="form-section">
-                <div class="steps">
-                    <div class="step-circle active">1</div>
-                    <div class="step-circle">2</div>
-                    <div class="step-circle">3</div>
-                    <div class="step-circle">4</div>
-                </div>
-                
-                <form id="iatForm">
-                    <!-- Passo 1 -->
-                    <div class="step active" id="step1">
-                        <h2><i class="fas fa-user"></i> Identificação</h2>
-                        <div class="form-group">
-                            <label for="nome">Nome do Pesquisador *</label>
-                            <input type="text" id="nome" required placeholder="Digite seu nome completo">
-                        </div>
-                        <div class="form-group">
-                            <label for="matricula">Matrícula/Registro *</label>
-                            <input type="text" id="matricula" required placeholder="Sua matrícula no IAT">
-                        </div>
-                        <div class="form-group">
-                            <label for="data">Data da Pesquisa *</label>
-                            <input type="date" id="data" required>
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="nextStep()">
-                            Próximo <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                    
-                    <!-- Passo 2 -->
-                    <div class="step" id="step2">
-                        <h2><i class="fas fa-map-marker-alt"></i> Localização</h2>
-                        <div class="form-group">
-                            <label for="municipio">Município *</label>
-                            <input type="text" id="municipio" required placeholder="Nome do município">
-                        </div>
-                        <div class="form-group">
-                            <label for="latitude">Latitude *</label>
-                            <input type="text" id="latitude" required placeholder="Ex: -25.4284">
-                        </div>
-                        <div class="form-group">
-                            <label for="longitude">Longitude *</label>
-                            <input type="text" id="longitude" required placeholder="Ex: -49.2733">
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep()">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="nextStep()">
-                                Próximo <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Passo 3 -->
-                    <div class="step" id="step3">
-                        <h2><i class="fas fa-water"></i> Características</h2>
-                        <div class="form-group">
-                            <label>Tipo de Corpo Hídrico *</label><br>
-                            <label><input type="radio" name="tipo" value="Rio" required> Rio</label>
-                            <label><input type="radio" name="tipo" value="Lago"> Lago</label>
-                            <label><input type="radio" name="tipo" value="Nascente"> Nascente</label>
-                            <label><input type="radio" name="tipo" value="Reservatório"> Reservatório</label>
-                        </div>
-                        <div class="form-group">
-                            <label for="observacoes">Observações</label>
-                            <textarea id="observacoes" rows="4" placeholder="Descreva as características do local..."></textarea>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep()">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="nextStep()">
-                                Próximo <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Passo 4 -->
-                    <div class="step" id="step4">
-                        <h2><i class="fas fa-file-pdf"></i> Finalização</h2>
-                        <div class="form-group">
-                            <label for="assinatura">Assinatura Digital</label>
-                            <canvas id="canvas" width="500" height="200" style="border: 2px dashed #ccc; border-radius: 8px; cursor: crosshair;"></canvas>
-                            <button type="button" class="btn btn-secondary" onclick="limparAssinatura()" style="margin-top: 10px;">
-                                <i class="fas fa-eraser"></i> Limpar
-                            </button>
-                        </div>
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="termo" required>
-                                Confirmo que os dados estão corretos *
-                            </label>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep()">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="gerarPDF()">
-                                <i class="fas fa-download"></i> Gerar PDF
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </section>
-            
-            <aside class="sidebar">
-                <h3><i class="fas fa-list"></i> Resumo</h3>
-                <div id="resumo" class="summary">
-                    Preencha o formulário para ver o resumo aqui.
-                </div>
-                
-                <h3 style="margin-top: 25px;"><i class="fas fa-tools"></i> Ações</h3>
-                <button class="btn btn-secondary" onclick="salvarLocal()" style="width: 100%; margin-bottom: 10px;">
-                    <i class="fas fa-save"></i> Salvar Localmente
-                </button>
-                <button class="btn btn-secondary" onclick="carregarLocal()" style="width: 100%; margin-bottom: 10px;">
-                    <i class="fas fa-folder-open"></i> Carregar Dados
-                </button>
-                <button class="btn btn-secondary" onclick="limparFormulario()" style="width: 100%;">
-                    <i class="fas fa-trash"></i> Limpar Tudo
-                </button>
-                
-                <div style="margin-top: 25px; padding: 15px; background: #e6fffa; border-radius: 8px; text-align: center;">
-                    <h4><i class="fas fa-mobile-alt"></i> Instalar no Celular</h4>
-                    <p style="font-size: 0.9rem; margin: 10px 0;">Para usar como app:</p>
-                    <button class="btn install-btn" onclick="instalarPWA()">
-                        <i class="fas fa-download"></i> Instalar App
-                    </button>
-                    <p style="font-size: 0.8rem; margin-top: 10px; color: #4a5568;">
-                        No Chrome Android: Menu → "Adicionar à tela inicial"
-                    </p>
-                </div>
-            </aside>
+        <div class="form-options-grid" id="formOptions">
+            <!-- Formulários serão gerados dinamicamente -->
+        </div>
+        
+        <div class="instructions">
+            <h2><i class="fas fa-info-circle"></i> Como usar:</h2>
+            <ol>
+                <li><strong>Selecione um formulário</strong> clicando em uma das opções acima</li>
+                <li><strong>Preencha todas as 30 perguntas</strong> do formulário selecionado</li>
+                <li><strong>Adicione até 15 imagens</strong> relacionadas ao formulário</li>
+                <li><strong>Revise os dados</strong> antes de gerar o relatório</li>
+                <li><strong>Gere o PDF</strong> com todos os dados coletados</li>
+                <li><strong>Os dados são salvos automaticamente</strong> e podem ser retomados a qualquer momento</li>
+            </ol>
         </div>
         
         <footer>
-            <p>© 2023 Instituto Água e Terra (IAT) - Paraná</p>
-            <p>Este aplicativo funciona offline. Dados salvos localmente no dispositivo.</p>
+            <p>© 2024 Instituto Água e Terra (IAT) - Sistema de Coleta de Dados</p>
+            <p>Versão 3.0 | Funciona totalmente offline</p>
         </footer>
     </div>
-    
-    <div class="toast" id="toast"></div>
 
     <script>
-        // Configuração inicial
-        let passoAtual = 1;
-        const ctx = document.getElementById('canvas').getContext('2d');
-        let desenhando = false;
-        let dados = {};
-        
-        // Data atual como padrão
-        document.getElementById('data').valueAsDate = new Date();
-        
-        // Assinatura digital
-        document.getElementById('canvas').addEventListener('mousedown', iniciarDesenho);
-        document.getElementById('canvas').addEventListener('mousemove', desenhar);
-        document.getElementById('canvas').addEventListener('mouseup', pararDesenho);
-        
-        function iniciarDesenho(e) {
-            desenhando = true;
-            ctx.beginPath();
-            ctx.moveTo(e.offsetX, e.offsetY);
-        }
-        
-        function desenhar(e) {
-            if (!desenhando) return;
-            ctx.lineTo(e.offsetX, e.offsetY);
-            ctx.stroke();
-        }
-        
-        function pararDesenho() {
-            desenhando = false;
-        }
-        
-        function limparAssinatura() {
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        }
-        
-        // Navegação do formulário
-        function nextStep() {
-            if (passoAtual < 4) {
-                document.getElementById(`step${passoAtual}`).classList.remove('active');
-                document.querySelectorAll('.step-circle')[passoAtual-1].classList.remove('active');
-                
-                passoAtual++;
-                
-                document.getElementById(`step${passoAtual}`).classList.add('active');
-                document.querySelectorAll('.step-circle')[passoAtual-1].classList.add('active');
-                
-                salvarDados();
-                atualizarResumo();
+        // Dados dos formulários
+        const formularios = {
+            A: {
+                titulo: "Formulário A - Qualidade da Água",
+                descricao: "Avaliação de parâmetros físicos, químicos e biológicos da água",
+                icon: "fas fa-tint",
+                cor: "#2c7a47"
+            },
+            B: {
+                titulo: "Formulário B - Vegetação Ripária",
+                descricao: "Caracterização da vegetação às margens de corpos hídricos",
+                icon: "fas fa-tree",
+                cor: "#38a169"
+            },
+            C: {
+                titulo: "Formulário C - Geologia e Solos",
+                descricao: "Análise de características geológicas e tipos de solo",
+                icon: "fas fa-mountain",
+                cor: "#d69e2e"
+            },
+            D: {
+                titulo: "Formulário D - Fauna Aquática",
+                descricao: "Inventário e monitoramento de espécies aquáticas",
+                icon: "fas fa-fish",
+                cor: "#3182ce"
+            },
+            E: {
+                titulo: "Formulário E - Impactos Antrópicos",
+                descricao: "Avaliação de impactos humanos no ambiente",
+                icon: "fas fa-industry",
+                cor: "#e53e3e"
+            },
+            F: {
+                titulo: "Formulário F - Monitoramento Climático",
+                descricao: "Registro de dados climáticos e meteorológicos",
+                icon: "fas fa-cloud-sun",
+                cor: "#805ad5"
             }
-        }
+        };
         
-        function prevStep() {
-            if (passoAtual > 1) {
-                document.getElementById(`step${passoAtual}`).classList.remove('active');
-                document.querySelectorAll('.step-circle')[passoAtual-1].classList.remove('active');
-                
-                passoAtual--;
-                
-                document.getElementById(`step${passoAtual}`).classList.add('active');
-                document.querySelectorAll('.step-circle')[passoAtual-1].classList.add('active');
-            }
-        }
-        
-        // Salvar dados
-        function salvarDados() {
-            dados = {
-                nome: document.getElementById('nome').value,
-                matricula: document.getElementById('matricula').value,
-                data: document.getElementById('data').value,
-                municipio: document.getElementById('municipio').value,
-                latitude: document.getElementById('latitude').value,
-                longitude: document.getElementById('longitude').value,
-                tipo: document.querySelector('input[name="tipo"]:checked')?.value,
-                observacoes: document.getElementById('observacoes').value
-            };
-        }
-        
-        // Atualizar resumo
-        function atualizarResumo() {
-            salvarDados();
+        // Gerar cards dos formulários
+        function gerarCardsFormularios() {
+            const container = document.getElementById('formOptions');
             let html = '';
             
-            if (dados.nome) html += `<div class="summary-item"><strong>Pesquisador:</strong><br>${dados.nome}</div>`;
-            if (dados.data) html += `<div class="summary-item"><strong>Data:</strong><br>${dados.data}</div>`;
-            if (dados.municipio) html += `<div class="summary-item"><strong>Município:</strong><br>${dados.municipio}</div>`;
-            if (dados.latitude && dados.longitude) html += `<div class="summary-item"><strong>Coordenadas:</strong><br>${dados.latitude}, ${dados.longitude}</div>`;
-            if (dados.tipo) html += `<div class="summary-item"><strong>Tipo:</strong><br>${dados.tipo}</div>`;
-            
-            document.getElementById('resumo').innerHTML = html || 'Preencha o formulário para ver o resumo aqui.';
-        }
-        
-        // Salvar no armazenamento local
-        function salvarLocal() {
-            salvarDados();
-            localStorage.setItem('iatFormData', JSON.stringify(dados));
-            mostrarToast('Dados salvos localmente! ✅');
-        }
-        
-        function carregarLocal() {
-            const saved = localStorage.getItem('iatFormData');
-            if (saved) {
-                dados = JSON.parse(saved);
-                
-                // Preencher campos
-                Object.keys(dados).forEach(key => {
-                    const el = document.getElementById(key);
-                    if (el) el.value = dados[key];
-                    
-                    // Para radios
-                    if (key === 'tipo') {
-                        document.querySelector(`input[name="tipo"][value="${dados.tipo}"]`).checked = true;
-                    }
-                });
-                
-                atualizarResumo();
-                mostrarToast('Dados carregados! 📂');
-            } else {
-                mostrarToast('Nenhum dado salvo encontrado.', 'error');
-            }
-        }
-        
-        function limparFormulario() {
-            if (confirm('Tem certeza que quer limpar todos os dados?')) {
-                document.getElementById('iatForm').reset();
-                limparAssinatura();
-                localStorage.removeItem('iatFormData');
-                dados = {};
-                atualizarResumo();
-                mostrarToast('Formulário limpo! 🗑️');
-            }
-        }
-        
-        // Gerar PDF (simulação)
-        function gerarPDF() {
-            if (!document.getElementById('termo').checked) {
-                mostrarToast('Marque a confirmação antes de gerar PDF.', 'error');
-                return;
+            for (const [letra, dados] of Object.entries(formularios)) {
+                html += `
+                    <div class="form-option-card" onclick="abrirFormulario('${letra}')" 
+                         style="border-color: ${dados.cor}20;">
+                        <div class="form-letter" style="background: ${dados.cor}">${letra}</div>
+                        <div class="form-icon">
+                            <i class="${dados.icon}"></i>
+                        </div>
+                        <h3 class="form-title">${dados.titulo}</h3>
+                        <p class="form-description">${dados.descricao}</p>
+                    </div>
+                `;
             }
             
-            salvarLocal();
-            mostrarToast('Gerando PDF IAT... ⏳');
-            
-            setTimeout(() => {
-                // Criar link de download
-                const nomeArquivo = `IAT_${dados.nome || 'Formulario'}_${new Date().toISOString().slice(0,10)}.pdf`;
-                const blob = new Blob(['PDF Simulado - Em produção será gerado PDF real do IAT'], {type: 'application/pdf'});
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = nomeArquivo;
-                link.click();
-                
-                mostrarToast('PDF gerado com sucesso! 📄');
-            }, 1500);
+            container.innerHTML = html;
         }
         
-        // Instalar PWA
-        let deferredPrompt;
-        
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
-        
-        function instalarPWA() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        mostrarToast('App instalado com sucesso! 📱');
-                    }
-                    deferredPrompt = null;
-                });
-            } else {
-                mostrarToast('Use o menu do navegador para instalar', 'info');
-            }
+        // Abrir formulário selecionado
+        function abrirFormulario(letra) {
+            // Salvar seleção
+            localStorage.setItem('formularioSelecionado', letra);
+            
+            // Redirecionar para página do formulário
+            window.location.href = `formulario.html?form=${letra}`;
         }
         
         // Verificar conexão
         function atualizarConexao() {
             const status = document.getElementById('status');
             if (navigator.onLine) {
-                status.innerHTML = '<i class="fas fa-wifi"></i> Online';
-                status.style.background = 'rgba(56, 161, 105, 0.3)';
+                status.innerHTML = '<i class="fas fa-wifi"></i> <span>Online</span>';
+                status.style.background = 'var(--primary-color)';
             } else {
-                status.innerHTML = '<i class="fas fa-wifi-slash"></i> Offline';
-                status.style.background = 'rgba(229, 62, 62, 0.3)';
+                status.innerHTML = '<i class="fas fa-wifi-slash"></i> <span>Offline</span>';
+                status.style.background = '#e53e3e';
             }
         }
         
-        window.addEventListener('online', atualizarConexao);
-        window.addEventListener('offline', atualizarConexao);
-        atualizarConexao();
-        
-        // Toast messages
-        function mostrarToast(mensagem, tipo = 'success') {
-            const toast = document.getElementById('toast');
-            toast.innerHTML = `<i class="fas fa-${tipo === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${mensagem}`;
-            toast.className = `toast show ${tipo}`;
-            
-            setTimeout(() => {
-                toast.className = 'toast';
-            }, 3000);
-        }
-        
-        // Atualizar resumo ao digitar
-        document.querySelectorAll('input, textarea, select').forEach(el => {
-            el.addEventListener('input', atualizarResumo);
-        });
-        
-        document.querySelectorAll('input[type="radio"]').forEach(el => {
-            el.addEventListener('change', atualizarResumo);
-        });
-        
-        // Service Worker para PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('Service Worker registrado'))
-                .catch(err => console.log('Erro SW:', err));
-        }
-        
         // Inicializar
-        atualizarResumo();
+        document.addEventListener('DOMContentLoaded', function() {
+            gerarCardsFormularios();
+            atualizarConexao();
+            
+            window.addEventListener('online', atualizarConexao);
+            window.addEventListener('offline', atualizarConexao);
+        });
     </script>
 </body>
 </html>
