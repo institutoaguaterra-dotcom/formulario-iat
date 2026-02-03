@@ -1,10 +1,10 @@
 {
-  "name": "Formulário IAT Offline",
-  "short_name": "IAT Field",
-  "description": "Aplicativo de pesquisa de campo do Instituto Água e Terra",
-  "start_url": "/formulario-iat/",
+  "name": "Sistema de Formulários IAT",
+  "short_name": "IAT Forms",
+  "description": "Sistema para preenchimento de formulários de campo do Instituto Água e Terra",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#2c7a47",
+  "background_color": "#f5f9ff",
   "theme_color": "#2c7a47",
   "icons": [
     {
